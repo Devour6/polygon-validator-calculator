@@ -315,6 +315,132 @@
 
   .warning-banner strong { color: var(--yellow); font-weight: 600; }
 
+  /* Validator Table Styles */
+  .validators-card {
+    margin-top: 20px;
+    background: var(--cream-5);
+    border: 1px solid var(--cream-12);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .validators-card h2 {
+    font-family: 'Audiowide', cursive;
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--cream-40);
+    margin-bottom: 16px;
+  }
+
+  .validators-table-wrap {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid var(--cream-12);
+  }
+
+  .validators-table-wrap::-webkit-scrollbar {
+    width: 6px;
+  }
+  .validators-table-wrap::-webkit-scrollbar-track {
+    background: var(--cream-5);
+  }
+  .validators-table-wrap::-webkit-scrollbar-thumb {
+    background: var(--cream-20);
+    border-radius: 3px;
+  }
+
+  .validators-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .validators-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .validators-table thead th {
+    background: var(--cream-12);
+    color: var(--cream-60);
+    font-family: 'Audiowide', cursive;
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 10px 12px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--cream-20);
+  }
+
+  .validators-table thead th:nth-child(n+3) {
+    text-align: right;
+  }
+
+  .validators-table tbody tr {
+    border-bottom: 1px solid var(--cream-8);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .validators-table tbody tr:hover {
+    background: var(--cream-8);
+  }
+
+  .validators-table tbody tr.selected {
+    background: rgba(74, 222, 128, 0.08);
+    border-left: 2px solid var(--green);
+  }
+
+  .validators-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .validators-table td {
+    padding: 9px 12px;
+    color: var(--cream-60);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .validators-table td:nth-child(n+3) {
+    text-align: right;
+  }
+
+  .validators-table td:first-child {
+    color: var(--cream-40);
+    font-size: 12px;
+    width: 36px;
+    text-align: center;
+  }
+
+  .validators-table td:nth-child(2) {
+    color: var(--cream);
+    font-weight: 500;
+  }
+
+  .validators-table .profit-positive {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .validators-table .profit-negative {
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .validators-note {
+    font-size: 11px;
+    color: var(--cream-20);
+    margin-top: 12px;
+    font-weight: 300;
+  }
+
   footer {
     text-align: center;
     margin-top: 32px;
@@ -380,14 +506,14 @@
 
       <div class="field">
         <label>POL Price (USD)</label>
-        <input type="number" id="polPrice" value="0.22" min="0.01" step="0.01" oninput="calc()">
+        <input type="number" id="polPrice" value="0.105" min="0.01" step="0.001" oninput="calc()">
       </div>
 
       <h2 style="margin-top: 20px;">Network Parameters</h2>
 
       <div class="field">
-        <label>Total Network Staked (POL) <span class="hint">~3.6B currently</span></label>
-        <input type="number" id="networkStake" value="3600000000" min="100000000" step="100000000" oninput="calc()">
+        <label>Total Network Staked (POL) <span class="hint">~3.27B currently</span></label>
+        <input type="number" id="networkStake" value="3270000000" min="100000000" step="100000000" oninput="calc()">
       </div>
 
       <div class="field">
@@ -514,6 +640,31 @@
     </div>
   </div>
 
+  <!-- Current Validators Section -->
+  <div class="validators-card">
+    <h2>Current Validators (105)</h2>
+    <div class="validators-table-wrap">
+      <table class="validators-table" id="validatorsTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Validator</th>
+            <th>Total Stake</th>
+            <th>Self Stake</th>
+            <th>Commission</th>
+            <th>Uptime</th>
+            <th>Est. Annual Profit</th>
+          </tr>
+        </thead>
+        <tbody id="validatorsBody">
+        </tbody>
+      </table>
+    </div>
+    <div class="validators-note">
+      Data from Polygon Staking API. Last updated: March 4, 2026. Click a row (in Validator mode) to load its parameters into the calculator.
+    </div>
+  </div>
+
   <footer>
     <span>Phase</span> &mdash; Polygon Validator Evaluation Tool &mdash; March 2026
   </footer>
@@ -521,6 +672,113 @@
 
 <script>
 let mode = 'validator';
+let selectedValidatorIdx = -1;
+
+const VALIDATORS = [
+  {n:"Upbit Staking",t:388225971,s:1,c:100,u:100},
+  {n:"Coinbase",t:339692779,s:1,c:8,u:100},
+  {n:"Binance Node",t:255361578,s:50,c:1,u:99.9},
+  {n:"Figment",t:239908908,s:57405,c:8,u:100},
+  {n:"Luganodes",t:219103371,s:1000,c:10,u:100},
+  {n:"Matic Power",t:207777797,s:50,c:6,u:98.6},
+  {n:"Blockdaemon",t:171742529,s:1,c:10,u:99.4},
+  {n:"Twinstake",t:166252109,s:1,c:5,u:100},
+  {n:"Kiln x Ownest",t:123299992,s:135962,c:5,u:99.9},
+  {n:"Web3Nodes",t:118162061,s:1337,c:0,u:100},
+  {n:"Everstake",t:95860498,s:500,c:0,u:99.9},
+  {n:"Allnodes",t:89425871,s:100,c:0,u:99.6},
+  {n:"Stakin",t:81815286,s:50,c:1,u:99.9},
+  {n:"P2P.org",t:78553472,s:10001,c:0,u:99.9},
+  {n:"Anonymous 194",t:71576503,s:100000,c:0,u:99.9},
+  {n:"Anonymous 94",t:70108996,s:785021,c:0,u:99.3},
+  {n:"Anonymous 91",t:60143550,s:552517,c:0,u:99.4},
+  {n:"Girnaar Nodes",t:57716371,s:27107,c:5,u:99.1},
+  {n:"Anonymous 93",t:56560078,s:44288,c:0,u:99.7},
+  {n:"Staking4all",t:45927790,s:9500,c:0,u:100},
+  {n:"Kraken",t:39068752,s:99,c:10,u:97.7},
+  {n:"StakePool",t:37140959,s:122430,c:0,u:99.3},
+  {n:"Anonymous 92",t:29127264,s:41159,c:0,u:99},
+  {n:"Matrix Stake",t:23764814,s:17014,c:5,u:99.9},
+  {n:"LinkPool",t:14870260,s:10000,c:0,u:100},
+  {n:"Abyss Finance",t:14653661,s:500,c:0,u:99.4},
+  {n:"SelfLiquidity",t:9340315,s:115374,c:0,u:99.7},
+  {n:"stake.fish",t:8935912,s:40,c:4,u:100},
+  {n:"Vault Staking",t:8672507,s:70000,c:0,u:99.3},
+  {n:"Supermoon",t:7934959,s:10000,c:0,u:99.6},
+  {n:"Blue Ocean",t:7581922,s:100,c:0,u:99.1},
+  {n:"The Abyss",t:7446248,s:500,c:0,u:99.7},
+  {n:"Meria",t:7172740,s:100,c:5,u:98.7},
+  {n:"Nobi",t:5991852,s:500,c:8,u:99.3},
+  {n:"CheckBit",t:5550674,s:80,c:0,u:93.9},
+  {n:"Prometheus Pool",t:5285559,s:300,c:0,u:99.6},
+  {n:"Making.cash",t:5116730,s:263384,c:0,u:99.9},
+  {n:"Valis Labs",t:4889859,s:160078,c:15,u:99.3},
+  {n:"Infosys",t:4386176,s:45606,c:0,u:97.7},
+  {n:"Fahrenheit",t:4367057,s:100,c:0,u:99.7},
+  {n:"algo|stake",t:4282398,s:36310,c:0,u:100},
+  {n:"Smart Stake",t:3485795,s:153465,c:10,u:100},
+  {n:"vido.info",t:3468465,s:10686,c:4,u:99.4},
+  {n:"VC Capital",t:3259258,s:2328,c:1,u:99.6},
+  {n:"HashKey Cloud",t:3157875,s:555910,c:5,u:100},
+  {n:"AnkrValidator",t:3137847,s:14667,c:4,u:99.7},
+  {n:"Sakura Foundation",t:2943585,s:50,c:0,u:99.3},
+  {n:"Stakebaby",t:2823496,s:2550,c:5,u:98.3},
+  {n:"Vader 73",t:2771407,s:59568,c:10,u:99.6},
+  {n:"PathrockNetwork",t:2709408,s:25032,c:5,u:98.4},
+  {n:"StakeCraft",t:2576931,s:11001,c:1,u:99.9},
+  {n:"stakeFi Network",t:2469968,s:1657647,c:5,u:99.6},
+  {n:"PolygonGo",t:2249675,s:50,c:0,u:100},
+  {n:"Rasputin",t:2244946,s:200,c:0,u:99.9},
+  {n:"Chorus One",t:2146874,s:77,c:12,u:99.9},
+  {n:"EMC2 Node",t:2142252,s:50,c:0,u:99.3},
+  {n:"OKX Earn",t:2125704,s:100020,c:0,u:99.9},
+  {n:"Stake.Works",t:1993521,s:14326,c:1,u:100},
+  {n:"Chainwise",t:1990805,s:490805,c:5,u:98.3},
+  {n:"Vitwit",t:1985948,s:700017,c:5,u:99.7},
+  {n:"bountyblok",t:1971804,s:100,c:5,u:100},
+  {n:"BCW Technologies",t:1902319,s:983899,c:3,u:99.3},
+  {n:"[NODERS]",t:1781725,s:25002,c:0,u:99.4},
+  {n:"Stake Capital",t:1765554,s:1,c:8,u:98.9},
+  {n:"Chainlayer",t:1634776,s:110006,c:5,u:97.9},
+  {n:"DeFiMatic",t:1280849,s:23271,c:1,u:99.7},
+  {n:"Atlas Staking",t:1150852,s:25608,c:5,u:99.9},
+  {n:"Validatrium",t:1147571,s:10042,c:5,u:99.7},
+  {n:"Blocksize",t:1121655,s:19960,c:0,u:99.9},
+  {n:"Smartpay",t:1026382,s:1010520,c:5,u:98.9},
+  {n:"Deepheat",t:1023377,s:259306,c:5,u:98.7},
+  {n:"Tessellated",t:1013979,s:566990,c:5,u:94.7},
+  {n:"Newroad Network",t:1003653,s:724109,c:8,u:99.4},
+  {n:"Perfect Stake",t:931186,s:80,c:10,u:100},
+  {n:"TruFin",t:904915,s:11128,c:5,u:99.6},
+  {n:"Streamr",t:894226,s:1,c:10,u:99.7},
+  {n:"Coinstash",t:858330,s:100,c:7,u:100},
+  {n:"Data Nexus",t:796604,s:256453,c:8,u:99.7},
+  {n:"Matrixed.Link",t:773122,s:10000,c:5,u:99.9},
+  {n:"Pentagon Chain",t:450720,s:205762,c:8,u:99.3},
+  {n:"Northstake",t:418334,s:10101,c:5,u:99.4},
+  {n:"Matic Friends",t:355966,s:1000,c:7,u:99.7},
+  {n:"Pentagon Games",t:330079,s:159045,c:8,u:99},
+  {n:"FreshSTAKING",t:324133,s:3164,c:9,u:98.3},
+  {n:"Mantra Chain",t:318410,s:10010,c:0,u:99.6},
+  {n:"Simply Staking",t:312177,s:10501,c:5,u:99.9},
+  {n:"RockX",t:257967,s:10000,c:5,u:99.9},
+  {n:"Cryptonomicon",t:243079,s:99290,c:5,u:99.9},
+  {n:"Blockops",t:237982,s:52172,c:98,u:98.6},
+  {n:"Orion",t:236843,s:6939,c:5,u:98.4},
+  {n:"Wetez",t:214461,s:76536,c:5,u:99},
+  {n:"Mind Heart Soul",t:201014,s:27096,c:10,u:94},
+  {n:"SolidStake",t:181957,s:10494,c:8,u:99.9},
+  {n:"Ledger by Meria",t:162531,s:10000,c:5,u:99.9},
+  {n:"NodeOps",t:142546,s:10001,c:10,u:99.9},
+  {n:"Google Cloud",t:128263,s:10101,c:100,u:99.3},
+  {n:"DSRV",t:119326,s:100,c:5,u:99.6},
+  {n:"Zero Hash",t:116118,s:10001,c:100,u:99.7},
+  {n:"Forbole",t:111015,s:10001,c:10,u:99},
+  {n:"Matrix Reserve",t:102305,s:100008,c:0,u:99.9},
+  {n:"Sentinel Stake",t:69362,s:19700,c:5,u:100},
+  {n:"Anonymous 95",t:65596,s:10000,c:0,u:86.4},
+  {n:"Pier Two",t:57807,s:2,c:7,u:98}
+];
 
 function fmt(n, decimals = 0) {
   return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
@@ -530,6 +788,13 @@ function fmtUsd(n) {
   if (Math.abs(n) >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
   if (Math.abs(n) >= 1000) return '$' + fmt(n, 0);
   return '$' + fmt(n, 2);
+}
+
+function fmtStake(n) {
+  if (n >= 1000000000) return (n / 1000000000).toFixed(2) + 'B';
+  if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return fmt(n, 0);
 }
 
 function setMode(m) {
@@ -550,6 +815,8 @@ function setMode(m) {
     document.getElementById('commissionRow').style.display = 'none';
     document.getElementById('selfRewardsRow').querySelector('td').textContent = 'Delegation rewards / day';
     document.getElementById('effectiveApyNote').textContent = 'On delegation (after commission)';
+    selectedValidatorIdx = -1;
+    highlightSelectedRow();
   } else {
     document.getElementById('selfStakeField').querySelector('label').innerHTML = 'Self-Stake (POL) <span class="hint">Min 10,000 for validator</span>';
     document.getElementById('selfStake').min = 10000;
@@ -564,6 +831,78 @@ function setMode(m) {
     document.getElementById('effectiveApyNote').textContent = 'On self-stake';
   }
   calc();
+}
+
+function calcValidatorProfit(v) {
+  const polPrice = parseFloat(document.getElementById('polPrice').value) || 0;
+  const networkStake = parseFloat(document.getElementById('networkStake').value) || 1;
+  const annualEmission = parseFloat(document.getElementById('annualEmission').value) || 0;
+  const serverCost = parseFloat(document.getElementById('serverCost').value) || 0;
+  const ethGasCost = parseFloat(document.getElementById('ethGasCost').value) || 0;
+  const otherCosts = parseFloat(document.getElementById('otherCosts').value) || 0;
+  const annualCosts = (serverCost + ethGasCost + otherCosts) * 12;
+
+  const stakeShare = v.t / networkStake;
+  const dailyEmission = annualEmission / 365;
+  const dailyRewards = dailyEmission * stakeShare * (v.u / 100);
+  const delegated = Math.max(0, v.t - v.s);
+  const commissionIncome = v.t > 0 ? dailyRewards * (delegated / v.t) * (v.c / 100) : 0;
+  const selfStakeRewards = v.t > 0 ? dailyRewards * (v.s / v.t) : 0;
+  const dailyOperatorRevenue = commissionIncome + selfStakeRewards;
+  const annualProfit = (dailyOperatorRevenue * 365 * polPrice) - annualCosts;
+
+  return annualProfit;
+}
+
+function selectValidator(idx) {
+  if (mode !== 'validator') return;
+  const v = VALIDATORS[idx];
+  selectedValidatorIdx = idx;
+
+  document.getElementById('totalStake').value = v.t;
+  document.getElementById('selfStake').value = v.s;
+  document.getElementById('commission').value = v.c;
+  document.getElementById('commissionVal').textContent = v.c + '%';
+  document.getElementById('uptime').value = v.u;
+  document.getElementById('uptimeVal').textContent = v.u + '%';
+
+  highlightSelectedRow();
+  calc();
+
+  // Scroll to top of page to see results
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function highlightSelectedRow() {
+  const rows = document.querySelectorAll('#validatorsBody tr');
+  rows.forEach((row, i) => {
+    if (i === selectedValidatorIdx) {
+      row.classList.add('selected');
+    } else {
+      row.classList.remove('selected');
+    }
+  });
+}
+
+function renderValidatorsTable() {
+  const tbody = document.getElementById('validatorsBody');
+  let html = '';
+  VALIDATORS.forEach((v, i) => {
+    const profit = calcValidatorProfit(v);
+    const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
+    const profitStr = (profit >= 0 ? '+' : '') + fmtUsd(profit);
+    const selected = i === selectedValidatorIdx ? ' class="selected"' : '';
+    html += '<tr' + selected + ' onclick="selectValidator(' + i + ')">' +
+      '<td>' + (i + 1) + '</td>' +
+      '<td>' + v.n + '</td>' +
+      '<td>' + fmtStake(v.t) + '</td>' +
+      '<td>' + fmtStake(v.s) + '</td>' +
+      '<td>' + v.c + '%</td>' +
+      '<td>' + v.u + '%</td>' +
+      '<td class="' + profitClass + '">' + profitStr + '</td>' +
+      '</tr>';
+  });
+  tbody.innerHTML = html;
 }
 
 function calc() {
@@ -661,8 +1000,12 @@ function calc() {
     verdictTitle.textContent = 'Not Profitable';
     verdictDetail.textContent = `Operating at a loss of ${fmtUsd(Math.abs(netProfitUsd))}/yr. Costs exceed rewards at current POL price.`;
   }
+
+  // Re-render validators table with updated profit calculations
+  renderValidatorsTable();
 }
 
+// Initial render
 calc();
 </script>
 </body>
