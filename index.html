@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polygon PoS Validator Profitability Calculator</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #7B3FE4;
+    --accent-dim: #7B3FE420;
+    --green: #22c55e;
+    --green-dim: #22c55e20;
+    --red: #ef4444;
+    --red-dim: #ef444420;
+    --yellow: #eab308;
+    --yellow-dim: #eab30820;
+    --text: #e4e4e7;
+    --text-dim: #71717a;
+    --text-mid: #a1a1aa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+    line-height: 1.5;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, #7B3FE4, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  header p { color: var(--text-dim); font-size: 14px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .card h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .field { margin-bottom: 14px; }
+
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+  }
+
+  .field label .hint {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .field input, .field select {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+
+  .field input[type="range"] {
+    -webkit-appearance: none;
+    padding: 0;
+    height: 6px;
+    background: var(--surface2);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .field input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .range-row input[type="range"] { flex: 1; }
+
+  .range-val {
+    min-width: 50px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .result-item {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .result-item.full { grid-column: 1 / -1; }
+
+  .result-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+
+  .result-value {
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .result-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
+  .neutral { color: var(--accent); }
+
+  .verdict-card {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .verdict-card.profitable {
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+  }
+
+  .verdict-card.unprofitable {
+    background: var(--red-dim);
+    border: 1px solid var(--red);
+  }
+
+  .verdict-card.marginal {
+    background: var(--yellow-dim);
+    border: 1px solid var(--yellow);
+  }
+
+  .verdict-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .verdict-detail {
+    font-size: 13px;
+    color: var(--text-mid);
+  }
+
+  .breakdown-table {
+    width: 100%;
+    margin-top: 12px;
+    border-collapse: collapse;
+  }
+
+  .breakdown-table tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .breakdown-table tr:last-child { border: none; }
+
+  .breakdown-table td {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  .breakdown-table td:first-child { color: var(--text-mid); }
+  .breakdown-table td:last-child { text-align: right; font-weight: 600; }
+
+  .info-banner {
+    background: var(--accent-dim);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .info-banner strong { color: var(--text); }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--surface2);
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .tab-btn.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .tab-btn:not(:last-child) { border-right: 1px solid var(--border); }
+
+  .warning-banner {
+    background: var(--yellow-dim);
+    border: 1px solid var(--yellow);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--text-mid);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .warning-banner strong { color: var(--yellow); }
+
+  footer {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Polygon PoS Validator Profitability Calculator</h1>
+    <p>Estimate returns from running a Polygon validator &mdash; Phase evaluation tool</p>
+  </header>
+
+  <div class="info-banner">
+    <strong>Polygon PoS:</strong> 105 max validators (near capacity). Checkpoint-based rewards on Ethereum L1.
+    ~103.5M POL annual emission (Year 6). MATIC&rarr;POL migration 99% complete.
+    <strong>No slashing active</strong> &mdash; planned for future V3.0 upgrade.
+  </div>
+
+  <div class="warning-banner">
+    <strong>Note:</strong> Validator slots are capped at 105 and nearly full. New entry requires an existing validator to leave.
+    This calculator assumes you have or can obtain a slot.
+  </div>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <div class="card">
+      <h2>Calculator Mode</h2>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="setMode('validator')">Validator Operator</button>
+        <button class="tab-btn" onclick="setMode('delegator')">Delegator</button>
+      </div>
+
+      <h2>Staking Parameters</h2>
+
+      <div class="field" id="selfStakeField">
+        <label>Self-Stake (POL) <span class="hint">Min 10,000 for validator</span></label>
+        <input type="number" id="selfStake" value="1000000" min="10000" step="100000" oninput="calc()">
+      </div>
+
+      <div class="field" id="totalStakeField">
+        <label>Total Validator Stake (POL) <span class="hint">Self + delegations</span></label>
+        <input type="number" id="totalStake" value="50000000" min="10000" step="1000000" oninput="calc()">
+      </div>
+
+      <div class="field">
+        <label>Commission Rate <span class="hint">Typical: 5-20%</span></label>
+        <div class="range-row">
+          <input type="range" id="commission" min="0" max="100" value="10" oninput="calc()">
+          <span class="range-val" id="commissionVal">10%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>POL Price (USD)</label>
+        <input type="number" id="polPrice" value="0.22" min="0.01" step="0.01" oninput="calc()">
+      </div>
+
+      <h2 style="margin-top: 20px;">Network Parameters</h2>
+
+      <div class="field">
+        <label>Total Network Staked (POL) <span class="hint">~3.6B currently</span></label>
+        <input type="number" id="networkStake" value="3600000000" min="100000000" step="100000000" oninput="calc()">
+      </div>
+
+      <div class="field">
+        <label>Annual Emission (POL) <span class="hint">Year 6: ~103.5M</span></label>
+        <input type="number" id="annualEmission" value="103530000" min="1000000" step="1000000" oninput="calc()">
+      </div>
+
+      <div class="field">
+        <label>Checkpoints per Day <span class="hint">~57 currently</span></label>
+        <input type="number" id="checkpointsPerDay" value="57" min="1" max="200" oninput="calc()">
+      </div>
+
+      <div class="field">
+        <label>Active Validators</label>
+        <input type="number" id="activeValidators" value="105" min="1" max="105" oninput="calc()">
+      </div>
+
+      <div class="field" id="uptimeField">
+        <label>Uptime % <span class="hint">Affects checkpoint participation</span></label>
+        <div class="range-row">
+          <input type="range" id="uptime" min="80" max="100" value="99" step="0.5" oninput="calc()">
+          <span class="range-val" id="uptimeVal">99%</span>
+        </div>
+      </div>
+
+      <h2 style="margin-top: 20px;" id="costsHeader">Operating Costs (Validator)</h2>
+
+      <div id="costsSection">
+        <div class="field">
+          <label>Monthly Server Cost (USD) <span class="hint">2 machines: $200-$800</span></label>
+          <input type="number" id="serverCost" value="400" min="0" step="25" oninput="calc()">
+        </div>
+
+        <div class="field">
+          <label>Monthly ETH Gas Reserve (USD) <span class="hint">Checkpoint submission</span></label>
+          <input type="number" id="ethGasCost" value="100" min="0" step="25" oninput="calc()">
+        </div>
+
+        <div class="field">
+          <label>Other Monthly Costs (USD) <span class="hint">RPC, monitoring, etc.</span></label>
+          <input type="number" id="otherCosts" value="75" min="0" step="25" oninput="calc()">
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div>
+      <div class="card">
+        <h2>Profitability Estimate</h2>
+
+        <div class="results-grid">
+          <div class="result-item">
+            <div class="result-label">Annual Revenue</div>
+            <div class="result-value neutral" id="annualRevenue">$0</div>
+            <div class="result-sub" id="annualRevenuePol">0 POL</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Annual Costs</div>
+            <div class="result-value negative" id="annualCosts">$0</div>
+            <div class="result-sub" id="annualCostBreakdown">Server + gas + other</div>
+          </div>
+          <div class="result-item full">
+            <div class="result-label">Net Annual Profit</div>
+            <div class="result-value" id="netProfit">$0</div>
+            <div class="result-sub" id="netProfitPol">0 POL</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Monthly Profit</div>
+            <div class="result-value" id="monthlyProfit">$0</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Effective APY</div>
+            <div class="result-value neutral" id="effectiveApy">0%</div>
+            <div class="result-sub" id="effectiveApyNote">On self-stake</div>
+          </div>
+        </div>
+
+        <div id="verdict" class="verdict-card profitable">
+          <div class="verdict-title" id="verdictTitle">Calculating...</div>
+          <div class="verdict-detail" id="verdictDetail"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <h2>Revenue Breakdown</h2>
+        <table class="breakdown-table">
+          <tr><td>Stake share of network</td><td id="stakeShare">0%</td></tr>
+          <tr><td>Checkpoint rewards / day</td><td id="dailyCheckpointRewards">0 POL</td></tr>
+          <tr><td>Proposer bonus / day (avg)</td><td id="dailyProposerBonus">0 POL</td></tr>
+          <tr id="commissionRow"><td>Commission income / day</td><td id="dailyCommission">0 POL</td></tr>
+          <tr id="selfRewardsRow"><td>Self-stake rewards / day</td><td id="dailySelfRewards">0 POL</td></tr>
+          <tr><td>Total daily revenue</td><td id="dailyTotal">0 POL</td></tr>
+          <tr><td>Gross network APY</td><td id="grossApy">0%</td></tr>
+          <tr><td>Reward per checkpoint</td><td id="rewardPerCheckpoint">0 POL</td></tr>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <h2>Key Assumptions</h2>
+        <table class="breakdown-table">
+          <tr><td>Max validators</td><td>105</td></tr>
+          <tr><td>Reward model</td><td>Checkpoint-based</td></tr>
+          <tr><td>Proposer bonus</td><td>10% of checkpoint reward</td></tr>
+          <tr><td>Checkpoint frequency</td><td>~every 34 min (~57/day)</td></tr>
+          <tr><td>Annual emission (Year 6)</td><td>~103.5M POL</td></tr>
+          <tr><td>Emission trend</td><td>Declining (was 20% Y1, now 1%)</td></tr>
+          <tr><td>Min validator stake</td><td>10,000 POL</td></tr>
+          <tr><td>Unbonding period</td><td>~2 days (80 checkpoints)</td></tr>
+          <tr><td>Slashing</td><td>Not active (planned V3.0)</td></tr>
+          <tr><td>ETH L1 dependency</td><td>Checkpoints submitted to Ethereum</td></tr>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <h2>Risk Factors</h2>
+        <table class="breakdown-table">
+          <tr><td>Slot availability</td><td style="color: var(--red);">Very limited (105 cap)</td></tr>
+          <tr><td>Emission trajectory</td><td style="color: var(--yellow);">Declining year over year</td></tr>
+          <tr><td>ETH gas spikes</td><td style="color: var(--yellow);">Can increase checkpoint costs</td></tr>
+          <tr><td>PIP-78 reduction</td><td style="color: var(--yellow);">Proposed 6.5% reward cut</td></tr>
+          <tr><td>Future slashing</td><td style="color: var(--yellow);">Planned, timeline TBD</td></tr>
+          <tr><td>POL price risk</td><td style="color: var(--yellow);">All rewards in POL</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Phase &mdash; Polygon Validator Evaluation Tool &mdash; Data as of March 2026
+  </footer>
+</div>
+
+<script>
+let mode = 'validator';
+
+function fmt(n, decimals = 0) {
+  return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function fmtUsd(n) {
+  if (Math.abs(n) >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
+  if (Math.abs(n) >= 1000) return '$' + fmt(n, 0);
+  return '$' + fmt(n, 2);
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const validatorOnly = ['selfStakeField', 'totalStakeField', 'costsSection', 'costsHeader', 'uptimeField'];
+  const delegatorHide = ['totalStakeField', 'costsSection', 'costsHeader', 'uptimeField'];
+
+  if (m === 'delegator') {
+    document.getElementById('selfStakeField').querySelector('label').innerHTML = 'Delegation Amount (POL) <span class="hint">Amount to delegate</span>';
+    document.getElementById('selfStake').min = 1;
+    document.getElementById('selfStake').value = 100000;
+    delegatorHide.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    document.getElementById('commissionRow').style.display = 'none';
+    document.getElementById('selfRewardsRow').querySelector('td').textContent = 'Delegation rewards / day';
+    document.getElementById('effectiveApyNote').textContent = 'On delegation (after commission)';
+  } else {
+    document.getElementById('selfStakeField').querySelector('label').innerHTML = 'Self-Stake (POL) <span class="hint">Min 10,000 for validator</span>';
+    document.getElementById('selfStake').min = 10000;
+    document.getElementById('selfStake').value = 1000000;
+    delegatorHide.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = '';
+    });
+    document.getElementById('selfStakeField').style.display = '';
+    document.getElementById('commissionRow').style.display = '';
+    document.getElementById('selfRewardsRow').querySelector('td').textContent = 'Self-stake rewards / day';
+    document.getElementById('effectiveApyNote').textContent = 'On self-stake';
+  }
+  calc();
+}
+
+function calc() {
+  const selfStake = parseFloat(document.getElementById('selfStake').value) || 0;
+  const totalStake = mode === 'validator' ? (parseFloat(document.getElementById('totalStake').value) || 0) : selfStake;
+  const commissionPct = parseFloat(document.getElementById('commission').value) || 0;
+  const polPrice = parseFloat(document.getElementById('polPrice').value) || 0;
+  const networkStake = parseFloat(document.getElementById('networkStake').value) || 1;
+  const annualEmission = parseFloat(document.getElementById('annualEmission').value) || 0;
+  const checkpointsPerDay = parseFloat(document.getElementById('checkpointsPerDay').value) || 57;
+  const activeValidators = parseFloat(document.getElementById('activeValidators').value) || 105;
+  const uptimePct = mode === 'validator' ? (parseFloat(document.getElementById('uptime').value) || 99) / 100 : 1;
+  const serverCost = mode === 'validator' ? (parseFloat(document.getElementById('serverCost').value) || 0) : 0;
+  const ethGasCost = mode === 'validator' ? (parseFloat(document.getElementById('ethGasCost').value) || 0) : 0;
+  const otherCosts = mode === 'validator' ? (parseFloat(document.getElementById('otherCosts').value) || 0) : 0;
+
+  const commission = commissionPct / 100;
+  document.getElementById('commissionVal').textContent = commissionPct + '%';
+  if (mode === 'validator') {
+    document.getElementById('uptimeVal').textContent = (uptimePct * 100).toFixed(1) + '%';
+  }
+
+  // Stake share
+  const stakeShare = totalStake / networkStake;
+
+  // Daily emission
+  const dailyEmission = annualEmission / 365;
+
+  // Reward per checkpoint
+  const rewardPerCheckpoint = dailyEmission / checkpointsPerDay;
+
+  // Proposer bonus: 10% of each checkpoint reward, probability = stakeShare
+  const proposerBonusPct = 0.10;
+  const dailyProposerBonus = mode === 'validator'
+    ? checkpointsPerDay * rewardPerCheckpoint * proposerBonusPct * stakeShare * uptimePct
+    : 0;
+
+  // Regular checkpoint rewards (90% distributed proportionally)
+  const dailyCheckpointRewards = dailyEmission * (1 - proposerBonusPct) * stakeShare * uptimePct;
+
+  // Total rewards flowing to this validator
+  const totalDailyRewards = dailyCheckpointRewards + dailyProposerBonus;
+
+  let dailyRevenue, annualRevenuePol, dailyCommissionPol, dailySelfRewardsPol;
+
+  if (mode === 'validator') {
+    // Delegated portion
+    const delegatedStake = Math.max(0, totalStake - selfStake);
+
+    // Commission income from delegator rewards
+    const delegatorRewardShare = totalDailyRewards * (delegatedStake / totalStake);
+    dailyCommissionPol = delegatorRewardShare * commission;
+
+    // Self-stake rewards (no commission taken)
+    dailySelfRewardsPol = totalDailyRewards * (selfStake / totalStake);
+
+    dailyRevenue = dailyCommissionPol + dailySelfRewardsPol;
+    annualRevenuePol = dailyRevenue * 365;
+  } else {
+    // Delegator mode: rewards after validator commission
+    dailyCommissionPol = 0;
+    dailySelfRewardsPol = totalDailyRewards * (1 - commission);
+    dailyRevenue = dailySelfRewardsPol;
+    annualRevenuePol = dailyRevenue * 365;
+  }
+
+  const annualRevenueUsd = annualRevenuePol * polPrice;
+  const annualCostsUsd = (serverCost + ethGasCost + otherCosts) * 12;
+  const netProfitUsd = annualRevenueUsd - annualCostsUsd;
+  const monthlyProfitUsd = netProfitUsd / 12;
+
+  // Effective APY
+  const effectiveApy = selfStake > 0 ? (annualRevenuePol / selfStake) * 100 : 0;
+  const grossApy = networkStake > 0 ? (annualEmission / networkStake) * 100 : 0;
+
+  // Update display
+  document.getElementById('annualRevenue').textContent = fmtUsd(annualRevenueUsd);
+  document.getElementById('annualRevenuePol').textContent = fmt(annualRevenuePol, 0) + ' POL';
+  document.getElementById('annualCosts').textContent = fmtUsd(annualCostsUsd);
+  document.getElementById('annualCostBreakdown').textContent = mode === 'validator'
+    ? `$${fmt(serverCost)}/mo server + $${fmt(ethGasCost)}/mo gas + $${fmt(otherCosts)}/mo other`
+    : 'No operating costs (delegator)';
+
+  document.getElementById('netProfit').textContent = fmtUsd(netProfitUsd);
+  document.getElementById('netProfit').className = 'result-value ' + (netProfitUsd >= 0 ? 'positive' : 'negative');
+  document.getElementById('netProfitPol').textContent = fmt(annualRevenuePol, 0) + ' POL earned / yr';
+
+  document.getElementById('monthlyProfit').textContent = fmtUsd(monthlyProfitUsd);
+  document.getElementById('monthlyProfit').className = 'result-value ' + (monthlyProfitUsd >= 0 ? 'positive' : 'negative');
+
+  document.getElementById('effectiveApy').textContent = effectiveApy.toFixed(2) + '%';
+
+  // Breakdown
+  document.getElementById('stakeShare').textContent = (stakeShare * 100).toFixed(4) + '%';
+  document.getElementById('dailyCheckpointRewards').textContent = fmt(dailyCheckpointRewards, 0) + ' POL';
+  document.getElementById('dailyProposerBonus').textContent = fmt(dailyProposerBonus, 1) + ' POL';
+  document.getElementById('dailyCommission').textContent = fmt(dailyCommissionPol, 0) + ' POL';
+  document.getElementById('dailySelfRewards').textContent = fmt(dailySelfRewardsPol, 0) + ' POL';
+  document.getElementById('dailyTotal').textContent = fmt(dailyRevenue, 0) + ' POL ($' + fmt(dailyRevenue * polPrice, 2) + ')';
+  document.getElementById('grossApy').textContent = grossApy.toFixed(2) + '%';
+  document.getElementById('rewardPerCheckpoint').textContent = fmt(rewardPerCheckpoint, 0) + ' POL';
+
+  // Verdict
+  const verdict = document.getElementById('verdict');
+  const verdictTitle = document.getElementById('verdictTitle');
+  const verdictDetail = document.getElementById('verdictDetail');
+
+  if (mode === 'delegator') {
+    const netApyAfterCommission = effectiveApy;
+    verdict.className = 'verdict-card ' + (netApyAfterCommission > 3 ? 'profitable' : netApyAfterCommission > 1 ? 'marginal' : 'unprofitable');
+    verdictTitle.textContent = netApyAfterCommission > 3 ? 'Competitive Yield' : netApyAfterCommission > 1 ? 'Below Average Yield' : 'Low Yield';
+    verdictDetail.textContent = `${netApyAfterCommission.toFixed(2)}% net APY after ${commissionPct}% commission. Earning ~${fmt(dailyRevenue, 1)} POL/day ($${fmt(dailyRevenue * polPrice, 2)}).`;
+  } else if (netProfitUsd > 5000) {
+    verdict.className = 'verdict-card profitable';
+    verdictTitle.textContent = 'Profitable';
+    verdictDetail.textContent = `Net ${fmtUsd(netProfitUsd)}/yr after ${fmtUsd(annualCostsUsd)} in operating costs. ROI on self-stake: ${effectiveApy.toFixed(2)}% APY.`;
+  } else if (netProfitUsd > 0) {
+    verdict.className = 'verdict-card marginal';
+    verdictTitle.textContent = 'Marginally Profitable';
+    verdictDetail.textContent = `Only ${fmtUsd(netProfitUsd)}/yr profit. High operational overhead relative to returns.`;
+  } else {
+    verdict.className = 'verdict-card unprofitable';
+    verdictTitle.textContent = 'Not Profitable';
+    verdictDetail.textContent = `Operating at a loss of ${fmtUsd(Math.abs(netProfitUsd))}/yr. Costs exceed rewards at current POL price.`;
+  }
+}
+
+// Initialize
+calc();
+</script>
+</body>
+</html>
