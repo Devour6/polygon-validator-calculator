@@ -32,25 +32,91 @@
     background: var(--dark);
     color: var(--cream);
     min-height: 100vh;
-    padding: 24px;
+    padding: 32px 24px;
     line-height: 1.5;
     font-weight: 400;
+    position: relative;
   }
 
-  .container { max-width: 1200px; margin: 0 auto; }
+  /* Noise/grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
 
+  /* Subtle radial glow on background */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120%;
+    height: 60%;
+    background: radial-gradient(ellipse at center, rgba(243, 238, 217, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ---- Animations ---- */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .animate-in {
+    opacity: 0;
+    animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  .delay-5 { animation-delay: 0.5s; }
+  .delay-6 { animation-delay: 0.6s; }
+  .delay-7 { animation-delay: 0.7s; }
+
+  /* ---- Header ---- */
   header {
     text-align: center;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
     border-bottom: 1px solid var(--cream-12);
   }
 
   header h1 {
     font-family: 'Audiowide', cursive;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 400;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     color: var(--cream);
     letter-spacing: 0.02em;
   }
@@ -58,25 +124,24 @@
   header p {
     font-family: 'Outfit', sans-serif;
     color: var(--cream-40);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 300;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  @media (max-width: 768px) {
-    .grid { grid-template-columns: 1fr; }
-  }
-
+  /* ---- Glass Card ---- */
   .card {
-    background: var(--cream-5);
+    background: rgba(243, 238, 217, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--cream-12);
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 16px;
+    padding: 24px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    border-color: var(--cream-20);
+    box-shadow: 0 0 40px rgba(243, 238, 217, 0.02);
   }
 
   .card h2 {
@@ -84,12 +149,97 @@
     font-size: 11px;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: var(--cream-40);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
 
-  .field { margin-bottom: 14px; }
+  /* ---- Grid Layout ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; }
+    header h1 { font-size: 24px; }
+  }
+
+  /* ---- Info Banners ---- */
+  .info-banner {
+    background: rgba(243, 238, 217, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--cream-12);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--cream-40);
+    margin-bottom: 24px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .info-banner strong { color: var(--cream-60); font-weight: 600; }
+
+  .warning-banner {
+    background: rgba(250, 204, 21, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(250, 204, 21, 0.15);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--cream-40);
+    margin-bottom: 24px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .warning-banner strong { color: var(--yellow); font-weight: 600; }
+
+  /* ---- Tabs ---- */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border: 1px solid var(--cream-12);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--cream-5);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 11px 16px;
+    background: transparent;
+    border: none;
+    color: var(--cream-40);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Outfit', sans-serif;
+    position: relative;
+  }
+
+  .tab-btn.active {
+    background: var(--cream-12);
+    color: var(--cream);
+  }
+
+  .tab-btn:not(.active):hover {
+    background: var(--cream-8);
+    color: var(--cream-60);
+  }
+
+  .tab-btn:not(:last-child) {
+    border-right: 1px solid var(--cream-12);
+  }
+
+  /* ---- Form Fields ---- */
+  .field { margin-bottom: 16px; }
 
   .field label {
     display: flex;
@@ -97,7 +247,7 @@
     align-items: center;
     font-size: 13px;
     color: var(--cream-60);
-    margin-bottom: 6px;
+    margin-bottom: 7px;
     font-weight: 400;
   }
 
@@ -109,20 +259,21 @@
 
   .field input, .field select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 11px 14px;
     background: var(--cream-8);
     border: 1px solid var(--cream-12);
-    border-radius: 8px;
+    border-radius: 10px;
     color: var(--cream);
     font-size: 14px;
     font-family: 'Outfit', sans-serif;
     font-weight: 400;
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   .field input:focus, .field select:focus {
     border-color: var(--cream-40);
+    box-shadow: 0 0 0 3px rgba(243, 238, 217, 0.05);
   }
 
   .field input[type="range"] {
@@ -133,44 +284,62 @@
     border: none;
     border-radius: 3px;
     cursor: pointer;
+    box-shadow: none;
+  }
+
+  .field input[type="range"]:focus {
+    box-shadow: none;
   }
 
   .field input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     background: var(--cream);
     border-radius: 50%;
     cursor: pointer;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+    transition: transform 0.15s ease;
+  }
+
+  .field input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
   }
 
   .range-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
   .range-row input[type="range"] { flex: 1; }
 
   .range-val {
-    min-width: 50px;
+    min-width: 52px;
     text-align: right;
     font-size: 14px;
     font-weight: 600;
     color: var(--cream);
+    font-variant-numeric: tabular-nums;
   }
 
+  /* ---- Results Grid ---- */
   .results-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 14px;
     margin-top: 8px;
   }
 
   .result-item {
     background: var(--cream-8);
-    border-radius: 8px;
-    padding: 14px;
+    border-radius: 12px;
+    padding: 16px;
+    transition: background 0.3s ease;
+  }
+
+  .result-item:hover {
+    background: var(--cream-12);
   }
 
   .result-item.full { grid-column: 1 / -1; }
@@ -179,22 +348,24 @@
     font-family: 'Audiowide', cursive;
     font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     color: var(--cream-40);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     font-weight: 400;
   }
 
   .result-value {
     font-family: 'Outfit', sans-serif;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease;
   }
 
   .result-sub {
     font-size: 12px;
     color: var(--cream-20);
-    margin-top: 2px;
+    margin-top: 3px;
     font-weight: 300;
   }
 
@@ -202,41 +373,45 @@
   .negative { color: var(--red); }
   .neutral { color: var(--cream); }
 
+  /* ---- Verdict Card ---- */
   .verdict-card {
     margin-top: 20px;
-    padding: 20px;
-    border-radius: 12px;
+    padding: 24px;
+    border-radius: 14px;
     text-align: center;
+    transition: all 0.4s ease;
   }
 
   .verdict-card.profitable {
-    background: var(--green-dim);
-    border: 1px solid rgba(74, 222, 128, 0.3);
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.08) 0%, rgba(74, 222, 128, 0.04) 100%);
+    border: 1px solid rgba(74, 222, 128, 0.25);
   }
 
   .verdict-card.unprofitable {
-    background: var(--red-dim);
-    border: 1px solid rgba(248, 113, 113, 0.3);
+    background: linear-gradient(135deg, rgba(248, 113, 113, 0.08) 0%, rgba(248, 113, 113, 0.04) 100%);
+    border: 1px solid rgba(248, 113, 113, 0.25);
   }
 
   .verdict-card.marginal {
-    background: var(--yellow-dim);
-    border: 1px solid rgba(250, 204, 21, 0.3);
+    background: linear-gradient(135deg, rgba(250, 204, 21, 0.08) 0%, rgba(250, 204, 21, 0.04) 100%);
+    border: 1px solid rgba(250, 204, 21, 0.25);
   }
 
   .verdict-title {
     font-family: 'Audiowide', cursive;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   .verdict-detail {
     font-size: 13px;
     color: var(--cream-60);
     font-weight: 300;
+    line-height: 1.6;
   }
 
+  /* ---- Breakdown Tables ---- */
   .breakdown-table {
     width: 100%;
     margin-top: 12px;
@@ -245,12 +420,17 @@
 
   .breakdown-table tr {
     border-bottom: 1px solid var(--cream-8);
+    transition: background 0.2s ease;
+  }
+
+  .breakdown-table tr:hover {
+    background: var(--cream-5);
   }
 
   .breakdown-table tr:last-child { border: none; }
 
   .breakdown-table td {
-    padding: 8px 0;
+    padding: 10px 0;
     font-size: 13px;
     font-weight: 400;
   }
@@ -258,104 +438,131 @@
   .breakdown-table td:first-child { color: var(--cream-40); }
   .breakdown-table td:last-child { text-align: right; font-weight: 600; color: var(--cream-60); }
 
-  .info-banner {
-    background: var(--cream-5);
-    border: 1px solid var(--cream-12);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12px;
-    color: var(--cream-40);
+  /* ---- Validator Table Section ---- */
+  .validators-section {
+    margin-top: 32px;
+  }
+
+  .validators-section .card {
+    padding: 28px;
+  }
+
+  /* Stats Summary Bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
     margin-bottom: 20px;
-    line-height: 1.6;
-    font-weight: 300;
   }
 
-  .info-banner strong { color: var(--cream-60); font-weight: 600; }
-
-  .tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 16px;
-    border: 1px solid var(--cream-12);
-    border-radius: 8px;
-    overflow: hidden;
+  @media (max-width: 640px) {
+    .stats-bar {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
-  .tab-btn {
-    flex: 1;
-    padding: 10px;
+  .stat-item {
     background: var(--cream-8);
-    border: none;
-    color: var(--cream-40);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Outfit', sans-serif;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+    transition: background 0.3s ease;
   }
 
-  .tab-btn.active {
+  .stat-item:hover {
     background: var(--cream-12);
-    color: var(--cream);
   }
 
-  .tab-btn:not(:last-child) { border-right: 1px solid var(--cream-12); }
-
-  .warning-banner {
-    background: var(--yellow-dim);
-    border: 1px solid rgba(250, 204, 21, 0.25);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12px;
-    color: var(--cream-40);
-    margin-bottom: 20px;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  .warning-banner strong { color: var(--yellow); font-weight: 600; }
-
-  /* Validator Table Styles */
-  .validators-card {
-    margin-top: 20px;
-    background: var(--cream-5);
-    border: 1px solid var(--cream-12);
-    border-radius: 12px;
-    padding: 20px;
-  }
-
-  .validators-card h2 {
+  .stat-item-label {
     font-family: 'Audiowide', cursive;
-    font-size: 11px;
-    font-weight: 400;
+    font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--cream-40);
+    margin-bottom: 4px;
+    font-weight: 400;
+  }
+
+  .stat-item-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: -0.02em;
+  }
+
+  /* Search Bar */
+  .search-wrap {
+    position: relative;
     margin-bottom: 16px;
   }
 
+  .search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--cream-40);
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    background: var(--cream-8);
+    border: 1px solid var(--cream-12);
+    border-radius: 10px;
+    color: var(--cream);
+    font-size: 14px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .search-input::placeholder {
+    color: var(--cream-20);
+  }
+
+  .search-input:focus {
+    border-color: var(--cream-40);
+    box-shadow: 0 0 0 3px rgba(243, 238, 217, 0.05);
+  }
+
+  /* Table Container */
   .validators-table-wrap {
-    max-height: 500px;
+    max-height: 560px;
     overflow-y: auto;
-    border-radius: 8px;
+    overflow-x: auto;
+    border-radius: 12px;
     border: 1px solid var(--cream-12);
   }
 
   .validators-table-wrap::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
+
   .validators-table-wrap::-webkit-scrollbar-track {
     background: var(--cream-5);
   }
+
   .validators-table-wrap::-webkit-scrollbar-thumb {
     background: var(--cream-20);
     border-radius: 3px;
+  }
+
+  .validators-table-wrap::-webkit-scrollbar-thumb:hover {
+    background: var(--cream-40);
   }
 
   .validators-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+    min-width: 720px;
   }
 
   .validators-table thead {
@@ -365,17 +572,52 @@
   }
 
   .validators-table thead th {
-    background: var(--cream-12);
-    color: var(--cream-60);
+    background: rgba(15, 14, 12, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: var(--cream-40);
     font-family: 'Audiowide', cursive;
     font-size: 10px;
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 10px 12px;
+    padding: 12px 14px;
     text-align: left;
     white-space: nowrap;
     border-bottom: 1px solid var(--cream-20);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease, background 0.2s ease;
+    position: relative;
+  }
+
+  .validators-table thead th:hover {
+    color: var(--cream-60);
+    background: rgba(243, 238, 217, 0.08);
+  }
+
+  .validators-table thead th.sorted {
+    color: var(--cream);
+  }
+
+  .validators-table thead th .sort-arrow {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .validators-table thead th.sorted .sort-arrow {
+    opacity: 1;
+  }
+
+  .validators-table thead th.sorted.asc .sort-arrow {
+    transform: rotate(0deg);
+  }
+
+  .validators-table thead th.sorted.desc .sort-arrow {
+    transform: rotate(180deg);
   }
 
   .validators-table thead th:nth-child(n+3) {
@@ -385,7 +627,8 @@
   .validators-table tbody tr {
     border-bottom: 1px solid var(--cream-8);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.2s ease, border-color 0.2s ease;
+    border-left: 3px solid transparent;
   }
 
   .validators-table tbody tr:hover {
@@ -393,8 +636,8 @@
   }
 
   .validators-table tbody tr.selected {
-    background: rgba(74, 222, 128, 0.08);
-    border-left: 2px solid var(--green);
+    background: rgba(74, 222, 128, 0.06);
+    border-left: 3px solid var(--green);
   }
 
   .validators-table tbody tr:last-child {
@@ -402,20 +645,22 @@
   }
 
   .validators-table td {
-    padding: 9px 12px;
+    padding: 10px 14px;
     color: var(--cream-60);
     font-weight: 400;
     white-space: nowrap;
+    transition: color 0.2s ease;
   }
 
   .validators-table td:nth-child(n+3) {
     text-align: right;
+    font-variant-numeric: tabular-nums;
   }
 
   .validators-table td:first-child {
-    color: var(--cream-40);
+    color: var(--cream-20);
     font-size: 12px;
-    width: 36px;
+    width: 40px;
     text-align: center;
   }
 
@@ -424,27 +669,39 @@
     font-weight: 500;
   }
 
-  .validators-table .profit-positive {
-    color: var(--green);
+  /* Color-coded profit cells with gradient */
+  .profit-cell {
     font-weight: 600;
   }
 
-  .validators-table .profit-negative {
-    color: var(--red);
-    font-weight: 600;
-  }
+  .profit-high { color: #4ade80; }
+  .profit-mid { color: #86efac; }
+  .profit-low { color: #a3e635; }
+  .profit-marginal { color: var(--yellow); }
+  .profit-negative-low { color: #fca5a5; }
+  .profit-negative { color: var(--red); }
 
   .validators-note {
     font-size: 11px;
     color: var(--cream-20);
-    margin-top: 12px;
+    margin-top: 14px;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--cream-20);
+    font-size: 14px;
     font-weight: 300;
   }
 
+  /* ---- Footer ---- */
   footer {
     text-align: center;
-    margin-top: 32px;
-    padding-top: 20px;
+    margin-top: 40px;
+    padding-top: 24px;
     border-top: 1px solid var(--cream-12);
     font-size: 12px;
     color: var(--cream-20);
@@ -455,33 +712,50 @@
     font-family: 'Audiowide', cursive;
     font-weight: 400;
   }
+
+  /* ---- Section dividers ---- */
+  .section-divider {
+    height: 1px;
+    background: var(--cream-12);
+    margin: 24px 0;
+    border: none;
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 860px) {
+    body { padding: 16px; }
+    .card { padding: 18px; }
+    .validators-section .card { padding: 18px; }
+    .result-value { font-size: 22px; }
+    .stat-item-value { font-size: 18px; }
+  }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <header>
+  <header class="animate-in delay-1">
     <h1>Polygon PoS Validator Calculator</h1>
-    <p>Estimate returns from running a Polygon validator</p>
+    <p>Estimate returns from running a Polygon validator or delegating stake</p>
   </header>
 
-  <div class="info-banner">
+  <div class="info-banner animate-in delay-2">
     <strong>Polygon PoS:</strong> 105 max validators (near capacity). Checkpoint-based rewards on Ethereum L1.
     ~103.5M POL annual emission (Year 6). MATIC&rarr;POL migration 99% complete.
     <strong>No slashing active</strong> &mdash; planned for future V3.0 upgrade.
   </div>
 
-  <div class="warning-banner">
+  <div class="warning-banner animate-in delay-2">
     <strong>Note:</strong> Validator slots are capped at 105 and nearly full. New entry requires an existing validator to leave.
     This calculator assumes you have or can obtain a slot.
   </div>
 
   <div class="grid">
-    <div class="card">
+    <div class="card animate-in delay-3">
       <h2>Calculator Mode</h2>
       <div class="tabs">
-        <button class="tab-btn active" onclick="setMode('validator')">Validator Operator</button>
-        <button class="tab-btn" onclick="setMode('delegator')">Delegator</button>
+        <button class="tab-btn active" id="tabValidator" onclick="setMode('validator')">Validator Operator</button>
+        <button class="tab-btn" id="tabDelegator" onclick="setMode('delegator')">Delegator</button>
       </div>
 
       <h2>Staking Parameters</h2>
@@ -509,7 +783,8 @@
         <input type="number" id="polPrice" value="0.105" min="0.01" step="0.001" oninput="calc()">
       </div>
 
-      <h2 style="margin-top: 20px;">Network Parameters</h2>
+      <hr class="section-divider">
+      <h2>Network Parameters</h2>
 
       <div class="field">
         <label>Total Network Staked (POL) <span class="hint">~3.27B currently</span></label>
@@ -539,7 +814,8 @@
         </div>
       </div>
 
-      <h2 style="margin-top: 20px;" id="costsHeader">Operating Costs</h2>
+      <hr class="section-divider" id="costsDivider">
+      <h2 id="costsHeader">Operating Costs</h2>
 
       <div id="costsSection">
         <div class="field">
@@ -560,7 +836,7 @@
     </div>
 
     <div>
-      <div class="card">
+      <div class="card animate-in delay-4">
         <h2>Profitability Estimate</h2>
 
         <div class="results-grid">
@@ -596,7 +872,7 @@
         </div>
       </div>
 
-      <div class="card" style="margin-top: 20px;">
+      <div class="card animate-in delay-5" style="margin-top: 24px;">
         <h2>Revenue Breakdown</h2>
         <table class="breakdown-table">
           <tr><td>Stake share of network</td><td id="stakeShare">0%</td></tr>
@@ -610,7 +886,7 @@
         </table>
       </div>
 
-      <div class="card" style="margin-top: 20px;">
+      <div class="card animate-in delay-6" style="margin-top: 24px;">
         <h2>Key Assumptions</h2>
         <table class="breakdown-table">
           <tr><td>Max validators</td><td>105</td></tr>
@@ -626,7 +902,7 @@
         </table>
       </div>
 
-      <div class="card" style="margin-top: 20px;">
+      <div class="card animate-in delay-7" style="margin-top: 24px;">
         <h2>Risk Factors</h2>
         <table class="breakdown-table">
           <tr><td>Slot availability</td><td style="color: var(--red);">Very limited (105 cap)</td></tr>
@@ -641,31 +917,62 @@
   </div>
 
   <!-- Current Validators Section -->
-  <div class="validators-card">
-    <h2>Current Validators (105)</h2>
-    <div class="validators-table-wrap">
-      <table class="validators-table" id="validatorsTable">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Validator</th>
-            <th>Total Stake</th>
-            <th>Self Stake</th>
-            <th>Commission</th>
-            <th>Uptime</th>
-            <th>Est. Annual Profit</th>
-          </tr>
-        </thead>
-        <tbody id="validatorsBody">
-        </tbody>
-      </table>
-    </div>
-    <div class="validators-note">
-      Data from Polygon Staking API. Last updated: March 4, 2026. Click a row (in Validator mode) to load its parameters into the calculator.
+  <div class="validators-section animate-in delay-7">
+    <div class="card">
+      <h2>Current Validators (105)</h2>
+
+      <!-- Stats Summary Bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-item-label">Validators</div>
+          <div class="stat-item-value" id="statValidators">105</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item-label">Total Staked</div>
+          <div class="stat-item-value" id="statTotalStaked">--</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item-label">Avg Commission</div>
+          <div class="stat-item-value" id="statAvgCommission">--</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-item-label">Network APY</div>
+          <div class="stat-item-value" id="statNetworkApy">--</div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        </svg>
+        <input type="text" class="search-input" id="validatorSearch" placeholder="Search validators..." oninput="filterAndRenderTable()">
+      </div>
+
+      <div class="validators-table-wrap">
+        <table class="validators-table" id="validatorsTable">
+          <thead>
+            <tr>
+              <th data-col="idx" class="sorted asc"># <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="name">Validator <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="totalStake">Total Stake <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="selfStake">Self Stake <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="commission">Commission <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="uptime">Uptime <span class="sort-arrow">&#9650;</span></th>
+              <th data-col="profit">Est. Annual Profit <span class="sort-arrow">&#9650;</span></th>
+            </tr>
+          </thead>
+          <tbody id="validatorsBody">
+          </tbody>
+        </table>
+      </div>
+      <div class="validators-note">
+        Data from Polygon Staking API. Last updated: March 4, 2026. Click a row (in Validator mode) to load its parameters into the calculator.
+      </div>
     </div>
   </div>
 
-  <footer>
+  <footer class="animate-in delay-7">
     <span>Phase</span> &mdash; Polygon Validator Evaluation Tool &mdash; March 2026
   </footer>
 </div>
@@ -673,6 +980,8 @@
 <script>
 let mode = 'validator';
 let selectedValidatorIdx = -1;
+let sortCol = 'idx';
+let sortDir = 'asc';
 
 const VALIDATORS = [
   {n:"Upbit Staking",t:388225971,s:1,c:100,u:100},
@@ -780,7 +1089,13 @@ const VALIDATORS = [
   {n:"Pier Two",t:57807,s:2,c:7,u:98}
 ];
 
-function fmt(n, decimals = 0) {
+// Build indexed array for sorting
+let validatorData = VALIDATORS.map(function(v, i) {
+  return { idx: i, v: v, profit: 0 };
+});
+
+function fmt(n, decimals) {
+  if (decimals === undefined) decimals = 0;
   return n.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
 
@@ -792,24 +1107,31 @@ function fmtUsd(n) {
 
 function fmtStake(n) {
   if (n >= 1000000000) return (n / 1000000000).toFixed(2) + 'B';
-  if (n >= 1000000) return (n / 1000000).toFixed(2) + 'M';
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
   if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
   return fmt(n, 0);
 }
 
+function fmtCompact(n) {
+  if (n >= 1000000000) return (n / 1000000000).toFixed(2) + 'B';
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return n.toFixed(0);
+}
+
 function setMode(m) {
   mode = m;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  document.getElementById('tabValidator').classList.toggle('active', m === 'validator');
+  document.getElementById('tabDelegator').classList.toggle('active', m === 'delegator');
 
-  const delegatorHide = ['totalStakeField', 'costsSection', 'costsHeader', 'uptimeField'];
+  var delegatorHide = ['totalStakeField', 'costsSection', 'costsHeader', 'uptimeField', 'costsDivider'];
 
   if (m === 'delegator') {
     document.getElementById('selfStakeField').querySelector('label').innerHTML = 'Delegation Amount (POL) <span class="hint">Amount to delegate</span>';
     document.getElementById('selfStake').min = 1;
     document.getElementById('selfStake').value = 100000;
-    delegatorHide.forEach(id => {
-      const el = document.getElementById(id);
+    delegatorHide.forEach(function(id) {
+      var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
     document.getElementById('commissionRow').style.display = 'none';
@@ -821,8 +1143,8 @@ function setMode(m) {
     document.getElementById('selfStakeField').querySelector('label').innerHTML = 'Self-Stake (POL) <span class="hint">Min 10,000 for validator</span>';
     document.getElementById('selfStake').min = 10000;
     document.getElementById('selfStake').value = 1000000;
-    delegatorHide.forEach(id => {
-      const el = document.getElementById(id);
+    delegatorHide.forEach(function(id) {
+      var el = document.getElementById(id);
       if (el) el.style.display = '';
     });
     document.getElementById('selfStakeField').style.display = '';
@@ -834,30 +1156,30 @@ function setMode(m) {
 }
 
 function calcValidatorProfit(v) {
-  const polPrice = parseFloat(document.getElementById('polPrice').value) || 0;
-  const networkStake = parseFloat(document.getElementById('networkStake').value) || 1;
-  const annualEmission = parseFloat(document.getElementById('annualEmission').value) || 0;
-  const serverCost = parseFloat(document.getElementById('serverCost').value) || 0;
-  const ethGasCost = parseFloat(document.getElementById('ethGasCost').value) || 0;
-  const otherCosts = parseFloat(document.getElementById('otherCosts').value) || 0;
-  const annualCosts = (serverCost + ethGasCost + otherCosts) * 12;
+  var polPrice = parseFloat(document.getElementById('polPrice').value) || 0;
+  var networkStake = parseFloat(document.getElementById('networkStake').value) || 1;
+  var annualEmission = parseFloat(document.getElementById('annualEmission').value) || 0;
+  var serverCost = parseFloat(document.getElementById('serverCost').value) || 0;
+  var ethGasCost = parseFloat(document.getElementById('ethGasCost').value) || 0;
+  var otherCosts = parseFloat(document.getElementById('otherCosts').value) || 0;
+  var annualCosts = (serverCost + ethGasCost + otherCosts) * 12;
 
-  const stakeShare = v.t / networkStake;
-  const dailyEmission = annualEmission / 365;
-  const dailyRewards = dailyEmission * stakeShare * (v.u / 100);
-  const delegated = Math.max(0, v.t - v.s);
-  const commissionIncome = v.t > 0 ? dailyRewards * (delegated / v.t) * (v.c / 100) : 0;
-  const selfStakeRewards = v.t > 0 ? dailyRewards * (v.s / v.t) : 0;
-  const dailyOperatorRevenue = commissionIncome + selfStakeRewards;
-  const annualProfit = (dailyOperatorRevenue * 365 * polPrice) - annualCosts;
+  var stakeShare = v.t / networkStake;
+  var dailyEmission = annualEmission / 365;
+  var dailyRewards = dailyEmission * stakeShare * (v.u / 100);
+  var delegated = Math.max(0, v.t - v.s);
+  var commissionIncome = v.t > 0 ? dailyRewards * (delegated / v.t) * (v.c / 100) : 0;
+  var selfStakeRewards = v.t > 0 ? dailyRewards * (v.s / v.t) : 0;
+  var dailyOperatorRevenue = commissionIncome + selfStakeRewards;
+  var annualProfit = (dailyOperatorRevenue * 365 * polPrice) - annualCosts;
 
   return annualProfit;
 }
 
-function selectValidator(idx) {
+function selectValidator(origIdx) {
   if (mode !== 'validator') return;
-  const v = VALIDATORS[idx];
-  selectedValidatorIdx = idx;
+  var v = VALIDATORS[origIdx];
+  selectedValidatorIdx = origIdx;
 
   document.getElementById('totalStake').value = v.t;
   document.getElementById('selfStake').value = v.s;
@@ -869,14 +1191,14 @@ function selectValidator(idx) {
   highlightSelectedRow();
   calc();
 
-  // Scroll to top of page to see results
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function highlightSelectedRow() {
-  const rows = document.querySelectorAll('#validatorsBody tr');
-  rows.forEach((row, i) => {
-    if (i === selectedValidatorIdx) {
+  var rows = document.querySelectorAll('#validatorsBody tr');
+  rows.forEach(function(row) {
+    var rowIdx = parseInt(row.getAttribute('data-orig-idx'), 10);
+    if (rowIdx === selectedValidatorIdx) {
       row.classList.add('selected');
     } else {
       row.classList.remove('selected');
@@ -884,63 +1206,151 @@ function highlightSelectedRow() {
   });
 }
 
-function renderValidatorsTable() {
-  const tbody = document.getElementById('validatorsBody');
-  let html = '';
-  VALIDATORS.forEach((v, i) => {
-    const profit = calcValidatorProfit(v);
-    const profitClass = profit >= 0 ? 'profit-positive' : 'profit-negative';
-    const profitStr = (profit >= 0 ? '+' : '') + fmtUsd(profit);
-    const selected = i === selectedValidatorIdx ? ' class="selected"' : '';
-    html += '<tr' + selected + ' onclick="selectValidator(' + i + ')">' +
-      '<td>' + (i + 1) + '</td>' +
+function getProfitColorClass(profit) {
+  if (profit > 20000) return 'profit-high';
+  if (profit > 5000) return 'profit-mid';
+  if (profit > 1000) return 'profit-low';
+  if (profit > 0) return 'profit-marginal';
+  if (profit > -2000) return 'profit-negative-low';
+  return 'profit-negative';
+}
+
+// Sorting
+function setupSortHeaders() {
+  var headers = document.querySelectorAll('.validators-table thead th');
+  headers.forEach(function(th) {
+    th.addEventListener('click', function() {
+      var col = th.getAttribute('data-col');
+      if (sortCol === col) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortCol = col;
+        sortDir = col === 'name' ? 'asc' : 'desc';
+      }
+      // Update header classes
+      headers.forEach(function(h) {
+        h.classList.remove('sorted', 'asc', 'desc');
+      });
+      th.classList.add('sorted', sortDir);
+      filterAndRenderTable();
+    });
+  });
+}
+
+function getSortValue(item, col) {
+  switch (col) {
+    case 'idx': return item.idx;
+    case 'name': return item.v.n.toLowerCase();
+    case 'totalStake': return item.v.t;
+    case 'selfStake': return item.v.s;
+    case 'commission': return item.v.c;
+    case 'uptime': return item.v.u;
+    case 'profit': return item.profit;
+    default: return item.idx;
+  }
+}
+
+function filterAndRenderTable() {
+  var query = document.getElementById('validatorSearch').value.toLowerCase().trim();
+  var filtered = validatorData.filter(function(item) {
+    if (!query) return true;
+    return item.v.n.toLowerCase().indexOf(query) !== -1;
+  });
+
+  // Sort
+  filtered.sort(function(a, b) {
+    var aVal = getSortValue(a, sortCol);
+    var bVal = getSortValue(b, sortCol);
+    var cmp = 0;
+    if (typeof aVal === 'string') {
+      cmp = aVal.localeCompare(bVal);
+    } else {
+      cmp = aVal - bVal;
+    }
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
+  var tbody = document.getElementById('validatorsBody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="no-results">No validators match your search</td></tr>';
+    return;
+  }
+
+  var html = '';
+  filtered.forEach(function(item, displayIdx) {
+    var v = item.v;
+    var profit = item.profit;
+    var profitClass = getProfitColorClass(profit);
+    var profitStr = (profit >= 0 ? '+' : '') + fmtUsd(profit);
+    var selectedClass = item.idx === selectedValidatorIdx ? ' selected' : '';
+
+    html += '<tr class="' + selectedClass.trim() + '" data-orig-idx="' + item.idx + '" onclick="selectValidator(' + item.idx + ')">' +
+      '<td>' + (item.idx + 1) + '</td>' +
       '<td>' + v.n + '</td>' +
       '<td>' + fmtStake(v.t) + '</td>' +
       '<td>' + fmtStake(v.s) + '</td>' +
       '<td>' + v.c + '%</td>' +
       '<td>' + v.u + '%</td>' +
-      '<td class="' + profitClass + '">' + profitStr + '</td>' +
+      '<td class="profit-cell ' + profitClass + '">' + profitStr + '</td>' +
       '</tr>';
   });
   tbody.innerHTML = html;
 }
 
-function calc() {
-  const selfStake = parseFloat(document.getElementById('selfStake').value) || 0;
-  const totalStake = mode === 'validator' ? (parseFloat(document.getElementById('totalStake').value) || 0) : selfStake;
-  const commissionPct = parseFloat(document.getElementById('commission').value) || 0;
-  const polPrice = parseFloat(document.getElementById('polPrice').value) || 0;
-  const networkStake = parseFloat(document.getElementById('networkStake').value) || 1;
-  const annualEmission = parseFloat(document.getElementById('annualEmission').value) || 0;
-  const checkpointsPerDay = parseFloat(document.getElementById('checkpointsPerDay').value) || 57;
-  const uptimePct = mode === 'validator' ? (parseFloat(document.getElementById('uptime').value) || 99) / 100 : 1;
-  const serverCost = mode === 'validator' ? (parseFloat(document.getElementById('serverCost').value) || 0) : 0;
-  const ethGasCost = mode === 'validator' ? (parseFloat(document.getElementById('ethGasCost').value) || 0) : 0;
-  const otherCosts = mode === 'validator' ? (parseFloat(document.getElementById('otherCosts').value) || 0) : 0;
+function updateStats() {
+  var totalStaked = 0;
+  var totalCommission = 0;
+  VALIDATORS.forEach(function(v) {
+    totalStaked += v.t;
+    totalCommission += v.c;
+  });
+  var avgCommission = totalCommission / VALIDATORS.length;
+  var annualEmission = parseFloat(document.getElementById('annualEmission').value) || 0;
+  var networkStake = parseFloat(document.getElementById('networkStake').value) || 1;
+  var grossApy = (annualEmission / networkStake) * 100;
 
-  const commission = commissionPct / 100;
+  document.getElementById('statValidators').textContent = VALIDATORS.length;
+  document.getElementById('statTotalStaked').textContent = fmtCompact(totalStaked);
+  document.getElementById('statAvgCommission').textContent = avgCommission.toFixed(1) + '%';
+  document.getElementById('statNetworkApy').textContent = grossApy.toFixed(2) + '%';
+}
+
+function calc() {
+  var selfStake = parseFloat(document.getElementById('selfStake').value) || 0;
+  var totalStake = mode === 'validator' ? (parseFloat(document.getElementById('totalStake').value) || 0) : selfStake;
+  var commissionPct = parseFloat(document.getElementById('commission').value) || 0;
+  var polPrice = parseFloat(document.getElementById('polPrice').value) || 0;
+  var networkStake = parseFloat(document.getElementById('networkStake').value) || 1;
+  var annualEmission = parseFloat(document.getElementById('annualEmission').value) || 0;
+  var checkpointsPerDay = parseFloat(document.getElementById('checkpointsPerDay').value) || 57;
+  var uptimePct = mode === 'validator' ? (parseFloat(document.getElementById('uptime').value) || 99) / 100 : 1;
+  var serverCost = mode === 'validator' ? (parseFloat(document.getElementById('serverCost').value) || 0) : 0;
+  var ethGasCost = mode === 'validator' ? (parseFloat(document.getElementById('ethGasCost').value) || 0) : 0;
+  var otherCosts = mode === 'validator' ? (parseFloat(document.getElementById('otherCosts').value) || 0) : 0;
+
+  var commission = commissionPct / 100;
   document.getElementById('commissionVal').textContent = commissionPct + '%';
   if (mode === 'validator') {
     document.getElementById('uptimeVal').textContent = (uptimePct * 100).toFixed(1) + '%';
   }
 
-  const stakeShare = totalStake / networkStake;
-  const dailyEmission = annualEmission / 365;
-  const rewardPerCheckpoint = dailyEmission / checkpointsPerDay;
-  const proposerBonusPct = 0.10;
-  const dailyProposerBonus = mode === 'validator'
+  var stakeShare = totalStake / networkStake;
+  var dailyEmission = annualEmission / 365;
+  var rewardPerCheckpoint = dailyEmission / checkpointsPerDay;
+  var proposerBonusPct = 0.10;
+  var dailyProposerBonus = mode === 'validator'
     ? checkpointsPerDay * rewardPerCheckpoint * proposerBonusPct * stakeShare * uptimePct
     : 0;
-  const dailyCheckpointRewards = dailyEmission * (1 - proposerBonusPct) * stakeShare * uptimePct;
-  const totalDailyRewards = dailyCheckpointRewards + dailyProposerBonus;
+  var dailyCheckpointRewards = dailyEmission * (1 - proposerBonusPct) * stakeShare * uptimePct;
+  var totalDailyRewards = dailyCheckpointRewards + dailyProposerBonus;
 
-  let dailyRevenue, annualRevenuePol, dailyCommissionPol, dailySelfRewardsPol;
+  var dailyRevenue, annualRevenuePol, dailyCommissionPol, dailySelfRewardsPol;
 
   if (mode === 'validator') {
-    const delegatedStake = Math.max(0, totalStake - selfStake);
-    const delegatorRewardShare = totalDailyRewards * (delegatedStake / totalStake);
+    var delegatedStake = Math.max(0, totalStake - selfStake);
+    var delegatorRewardShare = totalStake > 0 ? totalDailyRewards * (delegatedStake / totalStake) : 0;
     dailyCommissionPol = delegatorRewardShare * commission;
-    dailySelfRewardsPol = totalDailyRewards * (selfStake / totalStake);
+    dailySelfRewardsPol = totalStake > 0 ? totalDailyRewards * (selfStake / totalStake) : 0;
     dailyRevenue = dailyCommissionPol + dailySelfRewardsPol;
     annualRevenuePol = dailyRevenue * 365;
   } else {
@@ -950,18 +1360,18 @@ function calc() {
     annualRevenuePol = dailyRevenue * 365;
   }
 
-  const annualRevenueUsd = annualRevenuePol * polPrice;
-  const annualCostsUsd = (serverCost + ethGasCost + otherCosts) * 12;
-  const netProfitUsd = annualRevenueUsd - annualCostsUsd;
-  const monthlyProfitUsd = netProfitUsd / 12;
-  const effectiveApy = selfStake > 0 ? (annualRevenuePol / selfStake) * 100 : 0;
-  const grossApy = networkStake > 0 ? (annualEmission / networkStake) * 100 : 0;
+  var annualRevenueUsd = annualRevenuePol * polPrice;
+  var annualCostsUsd = (serverCost + ethGasCost + otherCosts) * 12;
+  var netProfitUsd = annualRevenueUsd - annualCostsUsd;
+  var monthlyProfitUsd = netProfitUsd / 12;
+  var effectiveApy = selfStake > 0 ? (annualRevenuePol / selfStake) * 100 : 0;
+  var grossApy = networkStake > 0 ? (annualEmission / networkStake) * 100 : 0;
 
   document.getElementById('annualRevenue').textContent = fmtUsd(annualRevenueUsd);
   document.getElementById('annualRevenuePol').textContent = fmt(annualRevenuePol, 0) + ' POL';
   document.getElementById('annualCosts').textContent = fmtUsd(annualCostsUsd);
   document.getElementById('annualCostBreakdown').textContent = mode === 'validator'
-    ? `$${fmt(serverCost)}/mo server + $${fmt(ethGasCost)}/mo gas + $${fmt(otherCosts)}/mo other`
+    ? '$' + fmt(serverCost) + '/mo server + $' + fmt(ethGasCost) + '/mo gas + $' + fmt(otherCosts) + '/mo other'
     : 'No operating costs (delegator)';
   document.getElementById('netProfit').textContent = fmtUsd(netProfitUsd);
   document.getElementById('netProfit').className = 'result-value ' + (netProfitUsd >= 0 ? 'positive' : 'negative');
@@ -978,34 +1388,43 @@ function calc() {
   document.getElementById('grossApy').textContent = grossApy.toFixed(2) + '%';
   document.getElementById('rewardPerCheckpoint').textContent = fmt(rewardPerCheckpoint, 0) + ' POL';
 
-  const verdict = document.getElementById('verdict');
-  const verdictTitle = document.getElementById('verdictTitle');
-  const verdictDetail = document.getElementById('verdictDetail');
+  var verdict = document.getElementById('verdict');
+  var verdictTitle = document.getElementById('verdictTitle');
+  var verdictDetail = document.getElementById('verdictDetail');
 
   if (mode === 'delegator') {
-    const netApyAfterCommission = effectiveApy;
+    var netApyAfterCommission = effectiveApy;
     verdict.className = 'verdict-card ' + (netApyAfterCommission > 3 ? 'profitable' : netApyAfterCommission > 1 ? 'marginal' : 'unprofitable');
     verdictTitle.textContent = netApyAfterCommission > 3 ? 'Competitive Yield' : netApyAfterCommission > 1 ? 'Below Average Yield' : 'Low Yield';
-    verdictDetail.textContent = `${netApyAfterCommission.toFixed(2)}% net APY after ${commissionPct}% commission. Earning ~${fmt(dailyRevenue, 1)} POL/day ($${fmt(dailyRevenue * polPrice, 2)}).`;
+    verdictDetail.textContent = netApyAfterCommission.toFixed(2) + '% net APY after ' + commissionPct + '% commission. Earning ~' + fmt(dailyRevenue, 1) + ' POL/day ($' + fmt(dailyRevenue * polPrice, 2) + ').';
   } else if (netProfitUsd > 5000) {
     verdict.className = 'verdict-card profitable';
     verdictTitle.textContent = 'Profitable';
-    verdictDetail.textContent = `Net ${fmtUsd(netProfitUsd)}/yr after ${fmtUsd(annualCostsUsd)} in operating costs. ROI on self-stake: ${effectiveApy.toFixed(2)}% APY.`;
+    verdictDetail.textContent = 'Net ' + fmtUsd(netProfitUsd) + '/yr after ' + fmtUsd(annualCostsUsd) + ' in operating costs. ROI on self-stake: ' + effectiveApy.toFixed(2) + '% APY.';
   } else if (netProfitUsd > 0) {
     verdict.className = 'verdict-card marginal';
     verdictTitle.textContent = 'Marginally Profitable';
-    verdictDetail.textContent = `Only ${fmtUsd(netProfitUsd)}/yr profit. High operational overhead relative to returns.`;
+    verdictDetail.textContent = 'Only ' + fmtUsd(netProfitUsd) + '/yr profit. High operational overhead relative to returns.';
   } else {
     verdict.className = 'verdict-card unprofitable';
     verdictTitle.textContent = 'Not Profitable';
-    verdictDetail.textContent = `Operating at a loss of ${fmtUsd(Math.abs(netProfitUsd))}/yr. Costs exceed rewards at current POL price.`;
+    verdictDetail.textContent = 'Operating at a loss of ' + fmtUsd(Math.abs(netProfitUsd)) + '/yr. Costs exceed rewards at current POL price.';
   }
 
-  // Re-render validators table with updated profit calculations
-  renderValidatorsTable();
+  // Recalculate profits for table
+  validatorData.forEach(function(item) {
+    item.profit = calcValidatorProfit(item.v);
+  });
+
+  // Update stats
+  updateStats();
+
+  // Re-render table
+  filterAndRenderTable();
 }
 
-// Initial render
+// Init
+setupSortHeaders();
 calc();
 </script>
 </body>
