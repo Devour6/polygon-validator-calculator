@@ -150,7 +150,7 @@ export function calculateBreakevenStake(
   ethGasCost: number,
   otherCosts: number
 ): number {
-  if (polPrice <= 0 || networkStake <= 0 || uptime <= 0) return 10000;
+  if (polPrice <= 0 || networkStake <= 0 || uptime <= 0) return selfStake;
 
   const c = commissionPct / 100;
   const u = uptime / 100;
@@ -159,15 +159,15 @@ export function calculateBreakevenStake(
   const annualCosts = (serverCost + ethGasCost + otherCosts) * 12;
   const dailyNeeded = annualCosts / (365 * polPrice);
 
-  if (dailyNeeded <= 0) return Math.max(selfStake, 10000);
-  if (factor <= 0) return Math.max(selfStake, 10000);
+  if (dailyNeeded <= 0) return selfStake;
+  if (factor <= 0) return selfStake;
 
   if (c <= 0) {
-    return Math.max(selfStake, 10000);
+    return selfStake;
   }
 
   const breakeven = (dailyNeeded / factor - selfStake * (1 - c)) / c;
-  return Math.max(Math.round(breakeven), selfStake, 10000);
+  return Math.max(Math.round(breakeven), selfStake);
 }
 
 export function getVerdict(inputs: CalculatorInputs, results: CalculatorResults): VerdictInfo {
