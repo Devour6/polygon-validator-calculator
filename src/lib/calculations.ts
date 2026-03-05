@@ -139,6 +139,37 @@ export function calculateTableProfit(v: ValidatorData, inputs: CalculatorInputs)
   return annualRevenueUsd - annualCostsUsd;
 }
 
+export function calculateBreakevenStake(
+  selfStake: number,
+  commissionPct: number,
+  polPrice: number,
+  networkStake: number,
+  annualEmission: number,
+  uptime: number,
+  serverCost: number,
+  ethGasCost: number,
+  otherCosts: number
+): number {
+  if (polPrice <= 0 || networkStake <= 0 || uptime <= 0) return 10000;
+
+  const c = commissionPct / 100;
+  const u = uptime / 100;
+  const dailyEmission = annualEmission / 365;
+  const factor = (dailyEmission * u) / networkStake;
+  const annualCosts = (serverCost + ethGasCost + otherCosts) * 12;
+  const dailyNeeded = annualCosts / (365 * polPrice);
+
+  if (dailyNeeded <= 0) return Math.max(selfStake, 10000);
+  if (factor <= 0) return Math.max(selfStake, 10000);
+
+  if (c <= 0) {
+    return Math.max(selfStake, 10000);
+  }
+
+  const breakeven = (dailyNeeded / factor - selfStake * (1 - c)) / c;
+  return Math.max(Math.round(breakeven), selfStake, 10000);
+}
+
 export function getVerdict(inputs: CalculatorInputs, results: CalculatorResults): VerdictInfo {
   if (inputs.mode === 'delegator') {
     const apy = results.effectiveApy;
