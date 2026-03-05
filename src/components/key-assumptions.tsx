@@ -1,7 +1,5 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
-
 export function KeyAssumptions() {
   const assumptions = [
     'Annual emission: 103.5M POL (Year 6 schedule)',
@@ -15,20 +13,14 @@ export function KeyAssumptions() {
   ];
 
   return (
-    <div className="glass-card p-6 mb-6">
-      <div className="flex items-center gap-2 mb-4">
-        <AlertCircle className="w-4 h-4 text-phase-purple" />
-        <h3 className="font-[family-name:var(--font-display)] text-base text-cream">
-          Key Assumptions
-        </h3>
-      </div>
+    <div className="bg-cream-5 border border-cream-8 rounded-2xl p-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.36s' }}>
+      <h3 className="font-display text-[11px] font-normal uppercase tracking-[0.12em] text-cream-40 mb-4">
+        Key Assumptions
+      </h3>
       <ul className="space-y-2">
         {assumptions.map((a) => (
-          <li
-            key={a}
-            className="flex items-start gap-2 text-cream-60 text-sm font-[family-name:var(--font-body)]"
-          >
-            <span className="text-cream-20 mt-1.5 shrink-0 w-1 h-1 rounded-full bg-cream-20 inline-block" />
+          <li key={a} className="flex items-start gap-2 text-cream-60 text-sm font-body">
+            <span className="mt-1.5 shrink-0 w-1 h-1 rounded-full bg-cream-20 inline-block" />
             {a}
           </li>
         ))}

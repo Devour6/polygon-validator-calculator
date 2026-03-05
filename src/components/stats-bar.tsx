@@ -1,6 +1,5 @@
 'use client';
 
-import { Users, Coins, Percent, TrendingUp } from 'lucide-react';
 import { VALIDATORS } from '@/data/validators';
 import { fmtCompact } from '@/lib/formatters';
 import { DEFAULT_ANNUAL_EMISSION, DEFAULT_NETWORK_STAKED } from '@/lib/constants';
@@ -13,43 +12,20 @@ export function StatsBar() {
   const networkApy = (DEFAULT_ANNUAL_EMISSION / DEFAULT_NETWORK_STAKED) * 100;
 
   const stats = [
-    {
-      label: 'Total Validators',
-      value: totalValidators.toString(),
-      icon: Users,
-      color: 'text-phase-purple',
-    },
-    {
-      label: 'Total Staked',
-      value: fmtCompact(totalStaked) + ' POL',
-      icon: Coins,
-      color: 'text-phase-blue',
-    },
-    {
-      label: 'Avg Commission',
-      value: avgCommission.toFixed(1) + '%',
-      icon: Percent,
-      color: 'text-phase-yellow',
-    },
-    {
-      label: 'Network APY',
-      value: networkApy.toFixed(2) + '%',
-      icon: TrendingUp,
-      color: 'text-phase-green',
-    },
+    { label: 'Total Validators', value: totalValidators.toString() },
+    { label: 'Total Staked', value: fmtCompact(totalStaked) + ' POL' },
+    { label: 'Avg Commission', value: avgCommission.toFixed(1) + '%' },
+    { label: 'Network APY', value: networkApy.toFixed(2) + '%' },
   ];
 
   return (
-    <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.16s' }}>
       {stats.map((stat) => (
-        <div key={stat.label} className="glass-card p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <stat.icon className={`w-4 h-4 ${stat.color}`} />
-            <span className="text-cream-40 text-xs font-[family-name:var(--font-body)] uppercase tracking-wider">
-              {stat.label}
-            </span>
-          </div>
-          <div className="font-[family-name:var(--font-display)] text-lg text-cream">
+        <div key={stat.label} className="bg-cream-5 border border-cream-8 rounded-xl p-4">
+          <span className="font-display text-[10px] font-normal uppercase tracking-[0.1em] text-cream-40">
+            {stat.label}
+          </span>
+          <div className="font-display text-lg text-cream mt-1">
             {stat.value}
           </div>
         </div>
