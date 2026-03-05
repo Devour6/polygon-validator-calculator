@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #F3EED9;
+  --color-cream-90: rgba(243, 238, 217, 0.9);
+  --color-cream-80: rgba(243, 238, 217, 0.8);
+  --color-cream-60: rgba(243, 238, 217, 0.6);
+  --color-cream-40: rgba(243, 238, 217, 0.4);
+  --color-cream-20: rgba(243, 238, 217, 0.2);
+  --color-cream-12: rgba(243, 238, 217, 0.12);
+  --color-cream-8: rgba(243, 238, 217, 0.08);
+  --color-cream-5: rgba(243, 238, 217, 0.05);
+  --color-cream-3: rgba(243, 238, 217, 0.03);
+
+  --color-dark: #0F0E0C;
+  --color-dark-90: rgba(15, 14, 12, 0.9);
+  --color-dark-80: rgba(15, 14, 12, 0.8);
+
+  --color-phase-green: #4ADE80;
+  --color-phase-green-dim: rgba(74, 222, 128, 0.6);
+  --color-phase-red: #F87171;
+  --color-phase-red-dim: rgba(248, 113, 113, 0.6);
+  --color-phase-yellow: #FACC15;
+  --color-phase-yellow-dim: rgba(250, 204, 21, 0.6);
+  --color-phase-purple: #A78BFA;
+  --color-phase-blue: #60A5FA;
+
+  --font-display: 'Audiowide', cursive;
+  --font-body: 'Outfit', sans-serif;
+
+  --animate-fade-in: fade-in 0.6s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+  --animate-pulse-slow: pulse-slow 3s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: #0F0E0C;
+  color: #F3EED9;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Radial glow */
+body::after {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 60%;
+  background: radial-gradient(ellipse at center, rgba(130, 71, 229, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(243, 238, 217, 0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(243, 238, 217, 0.2);
+}
+
+/* Range slider styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(243, 238, 217, 0.12);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #F3EED9;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #0F0E0C;
+  box-shadow: 0 0 8px rgba(243, 238, 217, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #F3EED9;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #0F0E0C;
+  box-shadow: 0 0 8px rgba(243, 238, 217, 0.3);
+}
+
+/* Number input styling */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Profit color classes */
+.profit-high {
+  color: #4ADE80;
+}
+
+.profit-mid {
+  color: #86EFAC;
+}
+
+.profit-low {
+  color: #BEF264;
+}
+
+.profit-marginal {
+  color: #FACC15;
+}
+
+.profit-negative-low {
+  color: #FB923C;
+}
+
+.profit-negative {
+  color: #F87171;
+}
+
+/* Glass card utility */
+.glass-card {
+  background: rgba(243, 238, 217, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(243, 238, 217, 0.08);
+  border-radius: 1rem;
+}
+
+/* Table row hover */
+.table-row-hover {
+  transition: background-color 0.15s ease;
+}
+
+.table-row-hover:hover {
+  background-color: rgba(243, 238, 217, 0.05);
+}
