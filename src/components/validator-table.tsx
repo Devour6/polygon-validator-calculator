@@ -11,9 +11,10 @@ interface ValidatorTableProps {
   mode: CalculatorMode;
   selectedValidator: string | null;
   onSelect: (v: ValidatorData) => void;
+  liveValidators?: ValidatorData[];
 }
 
-export function ValidatorTable({ inputs, mode, selectedValidator, onSelect }: ValidatorTableProps) {
+export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, liveValidators }: ValidatorTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const calcProfit = useCallback(
@@ -23,6 +24,7 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect }: Va
 
   const { sortColumn, sortDirection, sortedValidators, handleSort } = useValidatorTable({
     calcProfit,
+    liveValidators,
   });
 
   const filtered = searchTerm

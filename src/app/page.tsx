@@ -11,8 +11,11 @@ import { KeyAssumptions } from '@/components/key-assumptions';
 import { RiskFactors } from '@/components/risk-factors';
 import { Footer } from '@/components/footer';
 import { useCalculator } from '@/hooks/use-calculator';
+import { useLiveData } from '@/hooks/use-live-data';
 
 export default function Home() {
+  const { data: liveData, loading } = useLiveData();
+
   const {
     inputs,
     results,
@@ -21,13 +24,13 @@ export default function Home() {
     updateInput,
     setMode,
     loadValidator,
-  } = useCalculator();
+  } = useCalculator(liveData);
 
   return (
     <div className="relative z-10 min-h-screen px-6 pt-8 pb-6">
       <div className="max-w-[1340px] mx-auto">
         <Header />
-        <StatsBar />
+        <StatsBar liveData={liveData} loading={loading} />
 
         {/* Calculator + Results — THE MAIN EVENT */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -49,6 +52,7 @@ export default function Home() {
           mode={inputs.mode}
           selectedValidator={selectedValidator}
           onSelect={loadValidator}
+          liveValidators={liveData?.validators}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mt-8">

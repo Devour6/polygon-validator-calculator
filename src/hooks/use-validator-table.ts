@@ -6,9 +6,10 @@ import { VALIDATORS } from '@/data/validators';
 
 interface UseValidatorTableProps {
   calcProfit: (v: ValidatorData) => number;
+  liveValidators?: ValidatorData[];
 }
 
-export function useValidatorTable({ calcProfit }: UseValidatorTableProps) {
+export function useValidatorTable({ calcProfit, liveValidators }: UseValidatorTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('index');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -21,8 +22,12 @@ export function useValidatorTable({ calcProfit }: UseValidatorTableProps) {
     }
   };
 
+  const validators = liveValidators && liveValidators.length > 0
+    ? liveValidators
+    : VALIDATORS;
+
   const sortedValidators = useMemo(() => {
-    const indexed = VALIDATORS.map((v, i) => ({ ...v, originalIndex: i }));
+    const indexed = validators.map((v, i) => ({ ...v, originalIndex: i }));
 
     return [...indexed].sort((a, b) => {
       let cmp = 0;
@@ -51,7 +56,7 @@ export function useValidatorTable({ calcProfit }: UseValidatorTableProps) {
       }
       return sortDirection === 'asc' ? cmp : -cmp;
     });
-  }, [sortColumn, sortDirection, calcProfit]);
+  }, [validators, sortColumn, sortDirection, calcProfit]);
 
   return {
     sortColumn,
