@@ -35,11 +35,12 @@ export async function GET() {
     let totalStaked = 0;
     const validators = activeValidators.map(
       (v: Record<string, unknown>, i: number) => {
-        const totalStake = Number(
-          BigInt(String(v.totalStaked ?? "0")) / BigInt(10 ** 18)
+        // totalStaked comes as a float in wei (e.g., 4.386e+24)
+        const totalStake = Math.round(
+          Number(v.totalStaked ?? 0) / 1e18
         );
-        const selfStake = Number(
-          BigInt(String(v.selfStake ?? "0")) / BigInt(10 ** 18)
+        const selfStake = Math.round(
+          Number(v.selfStake ?? 0) / 1e18
         );
         totalStaked += totalStake;
         return {
