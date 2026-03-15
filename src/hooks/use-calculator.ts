@@ -78,23 +78,24 @@ export function useCalculator(liveData?: LiveData | null) {
   const loadValidator = useCallback((v: ValidatorData) => {
     setSelectedValidator(v.name);
     setIsBreakeven(false);
-    if (inputs.mode === 'validator') {
-      setInputs((prev) => ({
+    setInputs((prev) => {
+      if (prev.mode === 'validator') {
+        return {
+          ...prev,
+          totalStake: v.totalStake,
+          selfStake: v.selfStake,
+          commission: v.commission,
+          uptime: v.uptime,
+        };
+      }
+      return {
         ...prev,
         totalStake: v.totalStake,
-        selfStake: v.selfStake,
         commission: v.commission,
         uptime: v.uptime,
-      }));
-    } else {
-      setInputs((prev) => ({
-        ...prev,
-        totalStake: v.totalStake,
-        commission: v.commission,
-        uptime: v.uptime,
-      }));
-    }
-  }, [inputs.mode]);
+      };
+    });
+  }, []);
 
   return {
     inputs,

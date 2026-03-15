@@ -21,45 +21,57 @@ export async function GET() {
       ),
     ]);
 
-    const priceData = await priceRes.json();
-    const validatorsData = await validatorsRes.json();
+    // Handle each response independently — one failure doesn't kill the other
+    let polPrice = DEFAULT_POL_PRICE;
+    if (priceRes.ok) {
+      const priceData = await priceRes.json();
+      polPrice = priceData?.["polygon-ecosystem-token"]?.usd ?? DEFAULT_POL_PRICE;
+    }
 
-    const polPrice =
-      priceData?.["polygon-ecosystem-token"]?.usd ?? DEFAULT_POL_PRICE;
+    let validators: { name: string; totalStake: number; selfStake: number; commission: number; uptime: number }[] = [];
+    let totalStaked = DEFAULT_NETWORK_STAKED;
+    let validatorCount = DEFAULT_ACTIVE_VALIDATORS;
 
-    const allValidators = validatorsData?.result ?? [];
-    const activeValidators = allValidators.filter(
-      (v: Record<string, unknown>) => v.status === "active"
-    );
+    if (validatorsRes.ok) {
+      const validatorsData = await validatorsRes.json();
+      const allValidators = validatorsData?.result ?? [];
+      const activeValidators = allValidators.filter(
+        (v: Record<string, unknown>) => v.status === "active"
+      );
 
-    let totalStaked = 0;
-    const validators = activeValidators.map(
-      (v: Record<string, unknown>, i: number) => {
-        // totalStaked comes as a float in wei (e.g., 4.386e+24)
-        const totalStake = Math.round(
-          Number(v.totalStaked ?? 0) / 1e18
-        );
-        const selfStake = Math.round(
-          Number(v.selfStake ?? 0) / 1e18
-        );
-        totalStaked += totalStake;
-        return {
-          name: (v.name as string) || `Validator ${v.id ?? i}`,
-          totalStake,
-          selfStake,
-          commission: (v.commissionPercent as number) ?? 5,
-          uptime: (v.uptimePercent as number) ?? 100,
-        };
-      }
-    );
+      totalStaked = 0;
+      validators = activeValidators.map(
+        (v: Record<string, unknown>, i: number) => {
+          // totalStaked comes as a float in wei (e.g., 4.386e+24)
+          const totalStake = Math.round(
+            Number(v.totalStaked ?? 0) / 1e18
+          );
+          const selfStake = Math.round(
+            Number(v.selfStake ?? 0) / 1e18
+          );
+          totalStaked += totalStake;
+          return {
+            name: (v.name as string) || `Validator ${v.id ?? i}`,
+            totalStake,
+            selfStake,
+            commission: (v.commissionPercent as number) ?? 5,
+            uptime: (v.uptimePercent as number) ?? 100,
+          };
+        }
+      );
+      validatorCount = activeValidators.length;
+    }
+
+    // Only mark as live if at least one upstream responded successfully
+    const isLive = priceRes.ok || validatorsRes.ok;
 
     return NextResponse.json({
       polPrice,
       networkStake: totalStaked,
-      activeValidators: activeValidators.length,
+      activeValidators: validatorCount,
       annualEmission: DEFAULT_ANNUAL_EMISSION,
       validators,
-      updatedAt: new Date().toISOString(),
+      updatedAt: isLive ? new Date().toISOString() : null,
     });
   } catch {
     return NextResponse.json({

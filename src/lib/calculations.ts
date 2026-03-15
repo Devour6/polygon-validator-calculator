@@ -17,6 +17,18 @@ export function calculateProfit(inputs: CalculatorInputs): CalculatorResults {
     otherCosts,
   } = inputs;
 
+  // Guard against division by zero — return zeroed results
+  if (networkStake <= 0 || polPrice <= 0 || checkpointsPerDay <= 0) {
+    const annualCostsUsd = mode === 'validator' ? (serverCost + ethGasCost + otherCosts) * 12 : 0;
+    return {
+      stakeShare: 0, dailyCheckpointRewards: 0, dailyProposerBonus: 0,
+      dailyCommission: 0, dailySelfRewards: 0, dailyTotal: 0,
+      annualRevenuePol: 0, annualRevenueUsd: 0, annualCostsUsd,
+      netProfitUsd: -annualCostsUsd, monthlyProfitUsd: -annualCostsUsd / 12,
+      effectiveApy: 0, grossApy: 0, rewardPerCheckpoint: 0,
+    };
+  }
+
   if (mode === 'delegator') {
     // Delegator mode: selfStake is the delegation amount
     const delegationAmount = selfStake;
@@ -114,6 +126,7 @@ export function calculateProfit(inputs: CalculatorInputs): CalculatorResults {
 }
 
 export function calculateTableProfit(v: ValidatorData, inputs: CalculatorInputs): number {
+  if (v.totalStake <= 0 || inputs.networkStake <= 0 || inputs.polPrice <= 0) return 0;
   const stakeShare = v.totalStake / inputs.networkStake;
   const dailyEmission = inputs.annualEmission / 365;
   const rewardPerCheckpoint = dailyEmission / inputs.checkpointsPerDay;
@@ -194,9 +207,10 @@ export function getVerdict(inputs: CalculatorInputs, results: CalculatorResults)
     };
   }
 
-  // Validator mode
+  // Validator mode — verdict thresholds
+  const VERDICT_PROFITABLE = 5000;
   const netProfit = results.netProfitUsd;
-  if (netProfit > 5000) {
+  if (netProfit > VERDICT_PROFITABLE) {
     return {
       type: 'profitable',
       title: 'Profitable Operation',
