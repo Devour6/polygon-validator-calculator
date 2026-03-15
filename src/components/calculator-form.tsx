@@ -45,12 +45,13 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
       {/* Self Stake / Delegation Amount */}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
-          <label className="text-cream-60 text-[13px] font-body">
+          <label htmlFor="selfStake" className="text-cream-60 text-[13px] font-body">
             {isValidator ? 'Self Stake (POL)' : 'Delegation Amount (POL)'}
           </label>
           <span className="text-cream text-sm font-medium font-body">{fmt(inputs.selfStake)}</span>
         </div>
         <input
+          id="selfStake"
           type="range"
           aria-label={isValidator ? 'Self Stake' : 'Delegation Amount'}
           min={isValidator ? 10000 : 1000}
@@ -69,10 +70,10 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
       {isValidator && (
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <label className="text-cream-60 text-[13px] font-body">Total Stake (POL)</label>
+            <label htmlFor="totalStake" className="text-cream-60 text-[13px] font-body">Total Stake (POL)</label>
             <span className="text-cream text-sm font-medium font-body">{fmt(inputs.totalStake)}</span>
           </div>
-          <input type="range" aria-label="Total Stake" min={10000} max={500000000} step={100000} value={inputs.totalStake} onChange={(e) => onUpdate('totalStake', Number(e.target.value))} />
+          <input id="totalStake" type="range" aria-label="Total Stake" min={10000} max={500000000} step={100000} value={inputs.totalStake} onChange={(e) => onUpdate('totalStake', Number(e.target.value))} />
           <div className="flex justify-between text-cream-20 text-xs mt-1 font-body"><span>10K</span><span>500M</span></div>
         </div>
       )}
@@ -80,11 +81,11 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
       {/* Commission */}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
-          <label className="text-cream-60 text-[13px] font-body">Commission</label>
+          <label htmlFor="commission" className="text-cream-60 text-[13px] font-body">Commission</label>
           <span className="text-cream text-sm font-medium font-body">{inputs.commission}%</span>
         </div>
         {isValidator ? (
-          <input type="range" aria-label="Commission" min={0} max={100} step={1} value={inputs.commission} onChange={(e) => onUpdate('commission', Number(e.target.value))} />
+          <input id="commission" type="range" aria-label="Commission" min={0} max={100} step={1} value={inputs.commission} onChange={(e) => onUpdate('commission', Number(e.target.value))} />
         ) : (
           <div className="h-1.5 bg-cream-8 rounded-full overflow-hidden">
             <div className="h-full bg-cream-20 rounded-full" style={{ width: `${inputs.commission}%` }} />
@@ -96,10 +97,10 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
       {isValidator && (
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <label className="text-cream-60 text-[13px] font-body">Uptime</label>
+            <label htmlFor="uptime" className="text-cream-60 text-[13px] font-body">Uptime</label>
             <span className="text-cream text-sm font-medium font-body">{inputs.uptime}%</span>
           </div>
-          <input type="range" aria-label="Uptime" min={80} max={100} step={0.1} value={inputs.uptime} onChange={(e) => onUpdate('uptime', Number(e.target.value))} />
+          <input id="uptime" type="range" aria-label="Uptime" min={80} max={100} step={0.1} value={inputs.uptime} onChange={(e) => onUpdate('uptime', Number(e.target.value))} />
           <div className="flex justify-between text-cream-20 text-xs mt-1 font-body"><span>80%</span><span>100%</span></div>
         </div>
       )}
@@ -107,17 +108,17 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
       {/* POL Price */}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
-          <label className="text-cream-60 text-[13px] font-body">POL Price (USD)</label>
+          <label htmlFor="polPrice" className="text-cream-60 text-[13px] font-body">POL Price (USD)</label>
           <span className="text-cream text-sm font-medium font-body">${inputs.polPrice.toFixed(3)}</span>
         </div>
-        <input type="range" aria-label="POL Price" min={0.01} max={2.0} step={0.005} value={inputs.polPrice} onChange={(e) => onUpdate('polPrice', Number(e.target.value))} />
+        <input id="polPrice" type="range" aria-label="POL Price" min={0.01} max={2.0} step={0.005} value={inputs.polPrice} onChange={(e) => onUpdate('polPrice', Number(e.target.value))} />
         <div className="flex justify-between text-cream-20 text-xs mt-1 font-body"><span>$0.01</span><span>$2.00</span></div>
       </div>
 
       {/* Network Parameters */}
       <div className="border-t border-cream-8 pt-4 mt-4 mb-4">
         <div className="font-display text-[11px] font-normal uppercase tracking-[0.12em] text-cream-20 mb-3">Network Parameters</div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             { label: 'Network Staked', key: 'networkStake' as const },
             { label: 'Annual Emission', key: 'annualEmission' as const },
@@ -125,9 +126,11 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
             { label: 'Active Validators', key: 'activeValidators' as const },
           ].map(({ label, key }) => (
             <div key={key}>
-              <label className="text-cream-40 text-xs font-body">{label}</label>
+              <label htmlFor={`np-${key}`} className="text-cream-40 text-xs font-body">{label}</label>
               <input
+                id={`np-${key}`}
                 type="number"
+                aria-label={label}
                 value={inputs[key]}
                 onChange={(e) => onUpdate(key, Number(e.target.value))}
                 className="w-full mt-1 px-3 py-2 bg-dark border border-cream-8 rounded-lg text-cream text-sm font-body outline-none transition-all focus:border-cream-20"
@@ -149,10 +152,10 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
             ].map(({ label, key, max, step }) => (
               <div key={key}>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-cream-60 text-[13px] font-body">{label}</label>
+                  <label htmlFor={`cost-${key}`} className="text-cream-60 text-[13px] font-body">{label}</label>
                   <span className="text-cream text-sm font-body">${inputs[key]}</span>
                 </div>
-                <input type="range" aria-label={label} min={0} max={max} step={step} value={inputs[key]} onChange={(e) => onUpdate(key, Number(e.target.value))} />
+                <input id={`cost-${key}`} type="range" aria-label={label} min={0} max={max} step={step} value={inputs[key]} onChange={(e) => onUpdate(key, Number(e.target.value))} />
               </div>
             ))}
           </div>

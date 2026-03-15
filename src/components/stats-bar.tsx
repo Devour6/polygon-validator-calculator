@@ -1,7 +1,7 @@
 'use client';
 
 import { VALIDATORS } from '@/data/validators';
-import { fmtCompact } from '@/lib/formatters';
+import { fmtCompact, fmtPercent } from '@/lib/formatters';
 import { DEFAULT_ANNUAL_EMISSION, DEFAULT_NETWORK_STAKED } from '@/lib/constants';
 import type { LiveData } from '@/hooks/use-live-data';
 
@@ -28,8 +28,8 @@ export function StatsBar({ liveData, loading }: StatsBarProps) {
   const stats = [
     { label: 'Total Validators', value: totalValidators.toString() },
     { label: 'Total Staked', value: fmtCompact(totalStaked) + ' POL' },
-    { label: 'Avg Commission', value: avgCommission.toFixed(1) + '%' },
-    { label: 'Network APY', value: networkApy.toFixed(2) + '%' },
+    { label: 'Avg Commission', value: fmtPercent(avgCommission, 1) },
+    { label: 'Network APY', value: fmtPercent(networkApy) },
   ];
 
   return (
@@ -46,7 +46,7 @@ export function StatsBar({ liveData, loading }: StatsBarProps) {
           <span className="text-[11px] text-cream-20 font-body">Static defaults</span>
         )}
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.16s' }}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.16s' }}>
         {stats.map((stat) => (
           <div key={stat.label} className="bg-cream-5 border border-cream-8 rounded-xl p-4">
             <span className="font-display text-[10px] font-normal uppercase tracking-[0.1em] text-cream-40">

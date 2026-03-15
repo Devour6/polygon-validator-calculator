@@ -1,7 +1,7 @@
 'use client';
 
 import type { CalculatorInputs, CalculatorResults } from '@/lib/types';
-import { fmt, fmtUsd } from '@/lib/formatters';
+import { fmt, fmtUsd, fmtPercent } from '@/lib/formatters';
 
 interface ResultsPanelProps {
   inputs: CalculatorInputs;
@@ -39,8 +39,8 @@ export function ResultsPanel({ inputs, results }: ResultsPanelProps) {
       {/* Key metrics grid */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         {[
-          { label: 'Effective APY', value: results.effectiveApy.toFixed(2) + '%' },
-          { label: 'Gross APY', value: results.grossApy.toFixed(2) + '%' },
+          { label: 'Effective APY', value: fmtPercent(results.effectiveApy) },
+          { label: 'Gross APY', value: fmtPercent(results.grossApy) },
           { label: 'Monthly Profit', value: fmtUsd(results.monthlyProfitUsd) },
           { label: 'Daily Rewards', value: fmt(results.dailyTotal, 2) + ' POL' },
         ].map(({ label, value }) => (

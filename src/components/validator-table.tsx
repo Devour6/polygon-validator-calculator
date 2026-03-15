@@ -72,7 +72,7 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
                 <th
                   key={key}
                   onClick={() => handleSort(key)}
-                  className={`font-display text-[10px] font-normal uppercase tracking-[0.08em] text-cream-40 py-[14px] px-4 bg-[#131210] border-b border-cream-8 whitespace-nowrap cursor-pointer select-none transition-colors hover:text-cream-60 ${
+                  className={`font-display text-[10px] font-normal uppercase tracking-[0.08em] text-cream-40 py-[14px] px-4 bg-dark border-b border-cream-8 whitespace-nowrap cursor-pointer select-none transition-colors hover:text-cream-60 ${
                     align === 'center' ? 'text-center w-[44px]' : align === 'right' ? 'text-right' : 'text-left'
                   } ${sortColumn === key ? 'text-cream-60' : ''}`}
                 >

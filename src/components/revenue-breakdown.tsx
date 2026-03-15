@@ -1,7 +1,7 @@
 'use client';
 
 import type { CalculatorInputs, CalculatorResults } from '@/lib/types';
-import { fmt } from '@/lib/formatters';
+import { fmt, fmtPercent } from '@/lib/formatters';
 
 interface RevenueBreakdownProps {
   inputs: CalculatorInputs;
@@ -12,14 +12,14 @@ export function RevenueBreakdown({ inputs, results }: RevenueBreakdownProps) {
   const isValidator = inputs.mode === 'validator';
 
   const rows = [
-    { label: 'Stake Share', value: (results.stakeShare * 100).toFixed(4) + '%', show: true },
+    { label: 'Stake Share', value: fmtPercent(results.stakeShare * 100, 4), show: true },
     { label: 'Checkpoint Rewards / Day', value: fmt(results.dailyCheckpointRewards, 2) + ' POL', show: true },
     { label: 'Proposer Bonus / Day', value: fmt(results.dailyProposerBonus, 2) + ' POL', show: isValidator },
     { label: 'Commission / Day', value: fmt(results.dailyCommission, 2) + ' POL', show: isValidator },
     { label: 'Self-Stake Rewards / Day', value: fmt(results.dailySelfRewards, 2) + ' POL', show: isValidator },
     { label: 'Daily Total', value: fmt(results.dailyTotal, 2) + ' POL', show: true, highlight: true },
     { label: 'Reward per Checkpoint', value: fmt(results.rewardPerCheckpoint, 2) + ' POL', show: true },
-    { label: 'Gross APY', value: results.grossApy.toFixed(2) + '%', show: true },
+    { label: 'Gross APY', value: fmtPercent(results.grossApy), show: true },
   ];
 
   return (
