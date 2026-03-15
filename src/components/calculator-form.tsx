@@ -52,6 +52,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
         </div>
         <input
           type="range"
+          aria-label={isValidator ? 'Self Stake' : 'Delegation Amount'}
           min={isValidator ? 10000 : 1000}
           max={isValidator ? 10000000 : 5000000}
           step={isValidator ? 10000 : 1000}
@@ -71,7 +72,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
             <label className="text-cream-60 text-[13px] font-body">Total Stake (POL)</label>
             <span className="text-cream text-sm font-medium font-body">{fmt(inputs.totalStake)}</span>
           </div>
-          <input type="range" min={10000} max={500000000} step={100000} value={inputs.totalStake} onChange={(e) => onUpdate('totalStake', Number(e.target.value))} />
+          <input type="range" aria-label="Total Stake" min={10000} max={500000000} step={100000} value={inputs.totalStake} onChange={(e) => onUpdate('totalStake', Number(e.target.value))} />
           <div className="flex justify-between text-cream-20 text-xs mt-1 font-body"><span>10K</span><span>500M</span></div>
         </div>
       )}
@@ -83,7 +84,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
           <span className="text-cream text-sm font-medium font-body">{inputs.commission}%</span>
         </div>
         {isValidator ? (
-          <input type="range" min={0} max={100} step={1} value={inputs.commission} onChange={(e) => onUpdate('commission', Number(e.target.value))} />
+          <input type="range" aria-label="Commission" min={0} max={100} step={1} value={inputs.commission} onChange={(e) => onUpdate('commission', Number(e.target.value))} />
         ) : (
           <div className="h-1.5 bg-cream-8 rounded-full overflow-hidden">
             <div className="h-full bg-cream-20 rounded-full" style={{ width: `${inputs.commission}%` }} />
@@ -98,7 +99,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
             <label className="text-cream-60 text-[13px] font-body">Uptime</label>
             <span className="text-cream text-sm font-medium font-body">{inputs.uptime}%</span>
           </div>
-          <input type="range" min={80} max={100} step={0.1} value={inputs.uptime} onChange={(e) => onUpdate('uptime', Number(e.target.value))} />
+          <input type="range" aria-label="Uptime" min={80} max={100} step={0.1} value={inputs.uptime} onChange={(e) => onUpdate('uptime', Number(e.target.value))} />
           <div className="flex justify-between text-cream-20 text-xs mt-1 font-body"><span>80%</span><span>100%</span></div>
         </div>
       )}
@@ -109,7 +110,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
           <label className="text-cream-60 text-[13px] font-body">POL Price (USD)</label>
           <span className="text-cream text-sm font-medium font-body">${inputs.polPrice.toFixed(3)}</span>
         </div>
-        <input type="range" min={0.01} max={2.0} step={0.005} value={inputs.polPrice} onChange={(e) => onUpdate('polPrice', Number(e.target.value))} />
+        <input type="range" aria-label="POL Price" min={0.01} max={2.0} step={0.005} value={inputs.polPrice} onChange={(e) => onUpdate('polPrice', Number(e.target.value))} />
         <div className="flex justify-between text-cream-20 text-xs mt-1 font-body"><span>$0.01</span><span>$2.00</span></div>
       </div>
 
@@ -151,7 +152,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
                   <label className="text-cream-60 text-[13px] font-body">{label}</label>
                   <span className="text-cream text-sm font-body">${inputs[key]}</span>
                 </div>
-                <input type="range" min={0} max={max} step={step} value={inputs[key]} onChange={(e) => onUpdate(key, Number(e.target.value))} />
+                <input type="range" aria-label={label} min={0} max={max} step={step} value={inputs[key]} onChange={(e) => onUpdate(key, Number(e.target.value))} />
               </div>
             ))}
           </div>

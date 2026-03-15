@@ -132,10 +132,10 @@ input[type="number"] { -moz-appearance: textfield; }
 /* Selection */
 ::selection { background: rgba(243, 238, 217, 0.2); color: #F3EED9; }
 
-/* Profit color classes */
+/* Profit color classes — Phase palette only */
 .profit-high { color: #4ADE80; }
-.profit-mid { color: #86EFAC; }
-.profit-low { color: #BEF264; }
+.profit-mid { color: #4ADE80; }
+.profit-low { color: #FACC15; }
 .profit-marginal { color: #FACC15; }
-.profit-negative-low { color: #FB923C; }
+.profit-negative-low { color: #F87171; }
 .profit-negative { color: #F87171; }

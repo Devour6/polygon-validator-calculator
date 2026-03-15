@@ -11,9 +11,9 @@ interface ResultsPanelProps {
 export function ResultsPanel({ inputs, results }: ResultsPanelProps) {
   const isValidator = inputs.mode === 'validator';
   const profitColor =
-    results.netProfitUsd > 5000
+    results.netProfitUsd > 0
       ? 'text-phase-green'
-      : results.netProfitUsd > 0
+      : results.netProfitUsd > -1000
         ? 'text-phase-yellow'
         : 'text-phase-red';
 
