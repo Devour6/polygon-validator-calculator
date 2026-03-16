@@ -33,7 +33,7 @@ export function VerdictCard({ verdict }: VerdictCardProps) {
   const c = config[verdict.type];
 
   return (
-    <div className={`border border-cream-8 rounded-2xl p-6 border-l-4 ${c.borderColor} ${c.bgColor} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.26s' }}>
+    <div aria-live="polite" className={`border border-cream-8 rounded-2xl p-6 border-l-4 ${c.borderColor} ${c.bgColor} opacity-0 animate-fade-in-up`} style={{ animationDelay: '0.26s' }}>
       <h3 className={`font-display text-lg mb-2 ${c.titleColor}`}>
         {verdict.title}
       </h3>
