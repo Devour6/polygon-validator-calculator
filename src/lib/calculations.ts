@@ -43,7 +43,9 @@ export function calculateProfit(inputs: CalculatorInputs): CalculatorResults {
     const totalDailyRewards = dailyCheckpointRewards;
 
     // Delegator's share of rewards based on their delegation vs total stake
-    const delegatorShareOfRewards = totalDailyRewards * (delegationAmount / validatorTotalStake);
+    const delegatorShareOfRewards = validatorTotalStake > 0
+      ? totalDailyRewards * (delegationAmount / validatorTotalStake)
+      : 0;
 
     // Commission is taken from delegator rewards
     const dailyCommission = 0; // Not relevant for delegator view
