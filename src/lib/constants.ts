@@ -19,7 +19,7 @@ export const DEFAULT_INPUTS: CalculatorInputs = {
   checkpointsPerDay: DEFAULT_CHECKPOINTS_PER_DAY,
   activeValidators: DEFAULT_ACTIVE_VALIDATORS,
   uptime: 99.5,
-  serverCost: 550,
+  serverCost: 800,
   ethGasCost: 0,
   otherCosts: 0,
 };

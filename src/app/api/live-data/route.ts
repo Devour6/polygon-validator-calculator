@@ -25,7 +25,10 @@ export async function GET() {
     let polPrice = DEFAULT_POL_PRICE;
     if (priceRes.ok) {
       const priceData = await priceRes.json();
-      polPrice = priceData?.["polygon-ecosystem-token"]?.usd ?? DEFAULT_POL_PRICE;
+      const rawPrice = priceData?.["polygon-ecosystem-token"]?.usd;
+      polPrice = typeof rawPrice === 'number' && isFinite(rawPrice) && rawPrice > 0
+        ? rawPrice
+        : DEFAULT_POL_PRICE;
     }
 
     let validators: { name: string; totalStake: number; selfStake: number; commission: number; uptime: number }[] = [];

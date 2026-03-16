@@ -234,6 +234,7 @@ export function getVerdict(inputs: CalculatorInputs, results: CalculatorResults)
 }
 
 export function getProfitColorClass(profit: number): string {
+  if (!isFinite(profit)) return 'profit-marginal';
   if (profit > 10000) return 'profit-high';
   if (profit > 5000) return 'profit-mid';
   if (profit > 1000) return 'profit-low';
