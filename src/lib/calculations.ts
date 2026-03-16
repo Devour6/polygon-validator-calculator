@@ -182,7 +182,7 @@ export function calculateBreakevenStake(
   }
 
   const breakeven = (dailyNeeded / factor - selfStake * (1 - c)) / c;
-  return Math.max(Math.round(breakeven), selfStake);
+  return Math.max(Math.ceil(breakeven), selfStake);
 }
 
 export function getVerdict(inputs: CalculatorInputs, results: CalculatorResults): VerdictInfo {
@@ -219,7 +219,7 @@ export function getVerdict(inputs: CalculatorInputs, results: CalculatorResults)
       detail: `With net annual profit of $${Math.round(netProfit).toLocaleString()}, this validator configuration is profitable. Operating costs are well covered by checkpoint rewards and commission income.`,
     };
   }
-  if (netProfit > 0) {
+  if (netProfit >= 0) {
     return {
       type: 'marginal',
       title: 'Marginally Profitable',
