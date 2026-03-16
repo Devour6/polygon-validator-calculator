@@ -47,8 +47,8 @@ export function calculateProfit(inputs: CalculatorInputs): CalculatorResults {
       ? totalDailyRewards * (delegationAmount / validatorTotalStake)
       : 0;
 
-    // Commission is taken from delegator rewards
-    const dailyCommission = 0; // Not relevant for delegator view
+    // Commission is deducted from delegator's share (applied via multiplier below, not tracked separately)
+    const dailyCommission = 0;
     const dailySelfRewards = delegatorShareOfRewards * (1 - commission / 100);
 
     const dailyTotal = dailySelfRewards;
@@ -177,7 +177,7 @@ export function calculateBreakevenStake(
   if (dailyNeeded <= 0) return selfStake;
   if (factor <= 0) return selfStake;
 
-  if (c <= 0) {
+  if (c <= 0 || c >= 1) {
     return selfStake;
   }
 
