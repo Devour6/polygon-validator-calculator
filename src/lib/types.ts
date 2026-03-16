@@ -41,7 +41,7 @@ export interface CalculatorResults {
   rewardPerCheckpoint: number;
 }
 
-export type Verdict = 'profitable' | 'marginal' | 'unprofitable';
+export type Verdict = 'profitable' | 'marginal' | 'breakeven' | 'unprofitable';
 
 export interface VerdictInfo {
   type: Verdict;

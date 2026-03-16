@@ -13,6 +13,11 @@ export function VerdictCard({ verdict }: VerdictCardProps) {
       bgColor: 'bg-green-dim',
       titleColor: 'text-phase-green',
     },
+    breakeven: {
+      borderColor: 'border-phase-yellow',
+      bgColor: 'bg-yellow-dim',
+      titleColor: 'text-phase-yellow',
+    },
     marginal: {
       borderColor: 'border-phase-yellow',
       bgColor: 'bg-yellow-dim',

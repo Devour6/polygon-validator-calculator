@@ -51,7 +51,16 @@ export function useCalculator(liveData?: LiveData | null) {
       inputs.serverCost, inputs.ethGasCost, inputs.otherCosts]);
 
   const results: CalculatorResults = useMemo(() => calculateProfit(inputs), [inputs]);
-  const verdict: VerdictInfo = useMemo(() => getVerdict(inputs, results), [inputs, results]);
+  const verdict: VerdictInfo = useMemo(() => {
+    if (isBreakeven && inputs.mode === 'validator') {
+      return {
+        type: 'breakeven' as const,
+        title: 'Break Even',
+        detail: `Revenue covers $${Math.round(results.annualCostsUsd).toLocaleString()} in annual operating costs with minimal margin. Increasing delegated stake or reducing costs would improve profitability.`,
+      };
+    }
+    return getVerdict(inputs, results);
+  }, [isBreakeven, inputs, results]);
 
   const updateInput = useCallback(<K extends keyof CalculatorInputs>(
     key: K,
