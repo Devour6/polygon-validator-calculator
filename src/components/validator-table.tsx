@@ -71,8 +71,12 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
               {columns.map(({ key, label, align }) => (
                 <th
                   key={key}
+                  role="button"
+                  tabIndex={0}
+                  aria-sort={sortColumn === key ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
                   onClick={() => handleSort(key)}
-                  className={`font-display text-[10px] font-normal uppercase tracking-[0.08em] text-cream-40 py-[14px] px-4 bg-dark border-b border-cream-8 whitespace-nowrap cursor-pointer select-none transition-colors hover:text-cream-60 ${
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(key); } }}
+                  className={`font-display text-[10px] font-normal uppercase tracking-[0.08em] text-cream-40 py-[14px] px-4 bg-dark border-b border-cream-8 whitespace-nowrap cursor-pointer select-none transition-colors hover:text-cream-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cream-40 ${
                     align === 'center' ? 'text-center w-[44px]' : align === 'right' ? 'text-right' : 'text-left'
                   } ${sortColumn === key ? 'text-cream-60' : ''}`}
                 >
@@ -85,6 +89,9 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
             </tr>
           </thead>
           <tbody>
+            {filtered.length === 0 && (
+              <tr><td colSpan={columns.length} className="py-8 text-center text-cream-20 text-sm font-body">No validators found</td></tr>
+            )}
             {filtered.map((v, j) => {
               const profit = calcProfit(v);
               const profitClass = getProfitColorClass(profit);
@@ -93,8 +100,10 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
               return (
                 <tr
                   key={v.originalIndex}
+                  tabIndex={0}
                   onClick={() => onSelect(v)}
-                  className={`cursor-pointer transition-all border-b border-cream-5 border-l-[3px] hover:bg-cream-5 opacity-0 animate-row-fade ${
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(v); } }}
+                  className={`cursor-pointer transition-all border-b border-cream-5 border-l-[3px] hover:bg-cream-5 focus-visible:bg-cream-5 focus-visible:outline-none opacity-0 animate-row-fade ${
                     isSelected ? 'bg-cream-8 border-l-phase-green' : 'border-l-transparent'
                   }`}
                   style={{ animationDelay: `${Math.min(j * 12, 600)}ms` }}

@@ -132,7 +132,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
                 type="number"
                 aria-label={label}
                 value={inputs[key]}
-                onChange={(e) => onUpdate(key, Number(e.target.value))}
+                onChange={(e) => onUpdate(key, Math.max(0, Number(e.target.value) || 0))}
                 className="w-full mt-1 px-3 py-2 bg-dark border border-cream-8 rounded-lg text-cream text-sm font-body outline-none transition-all focus:border-cream-20"
               />
             </div>

@@ -132,6 +132,15 @@ input[type="number"] { -moz-appearance: textfield; }
 /* Selection */
 ::selection { background: rgba(243, 238, 217, 0.2); color: #F3EED9; }
 
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Profit color classes — Phase palette only */
 .profit-high { color: #4ADE80; }
 .profit-mid { color: #4ADE80; }
