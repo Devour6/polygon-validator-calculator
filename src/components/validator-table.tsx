@@ -71,6 +71,7 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
               {columns.map(({ key, label, align }) => (
                 <th
                   key={key}
+                  scope="col"
                   role="button"
                   tabIndex={0}
                   aria-sort={sortColumn === key ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
@@ -105,7 +106,7 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
                   aria-label={`Select validator ${v.name}`}
                   onClick={() => onSelect(v)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(v); } }}
-                  className={`cursor-pointer transition-all border-b border-cream-5 border-l-[3px] hover:bg-cream-5 focus-visible:bg-cream-5 focus-visible:outline-none opacity-0 animate-row-fade ${
+                  className={`cursor-pointer transition-all border-b border-cream-5 border-l-[3px] hover:bg-cream-5 focus-visible:bg-cream-5 focus-visible:outline-2 focus-visible:outline-cream-40 focus-visible:-outline-offset-2 opacity-0 animate-row-fade ${
                     isSelected ? 'bg-cream-8 border-l-phase-green' : 'border-l-transparent'
                   }`}
                   style={{ animationDelay: `${Math.min(j * 12, 600)}ms` }}

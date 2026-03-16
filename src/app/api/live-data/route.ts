@@ -51,8 +51,8 @@ export async function GET() {
           const totalStake = isFinite(rawTotal) ? Math.max(0, Math.round(rawTotal)) : 0;
           const selfStake = isFinite(rawSelf) ? Math.max(0, Math.round(rawSelf)) : 0;
           totalStaked += totalStake;
-          const commission = typeof v.commissionPercent === "number" ? v.commissionPercent : 5;
-          const uptime = typeof v.uptimePercent === "number" ? v.uptimePercent : 100;
+          const commission = typeof v.commissionPercent === "number" && isFinite(v.commissionPercent) && v.commissionPercent >= 0 ? v.commissionPercent : 5;
+          const uptime = typeof v.uptimePercent === "number" && isFinite(v.uptimePercent) && v.uptimePercent >= 0 ? v.uptimePercent : 100;
           return {
             name: typeof v.name === "string" && v.name ? v.name : `Validator ${v.id ?? i}`,
             totalStake,

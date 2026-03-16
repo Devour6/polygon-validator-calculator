@@ -23,6 +23,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
       <div className="flex mb-6 bg-dark border border-cream-8 rounded-xl p-1">
         <button
           onClick={() => onModeChange('validator')}
+          aria-pressed={isValidator}
           className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium font-body transition-all ${
             isValidator
               ? 'bg-cream-12 text-cream border border-cream-20'
@@ -33,6 +34,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
         </button>
         <button
           onClick={() => onModeChange('delegator')}
+          aria-pressed={!isValidator}
           className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium font-body transition-all ${
             !isValidator
               ? 'bg-cream-12 text-cream border border-cream-20'
@@ -59,6 +61,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
           id="selfStake"
           type="range"
           aria-label={isValidator ? 'Self Stake' : 'Delegation Amount'}
+          aria-valuetext={`${fmt(inputs.selfStake)} POL`}
           min={isValidator ? 10000 : 1000}
           max={isValidator ? 10000000 : 5000000}
           step={isValidator ? 10000 : 1000}

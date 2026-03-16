@@ -11,7 +11,7 @@ interface StatsBarProps {
 }
 
 export function StatsBar({ liveData, loading }: StatsBarProps) {
-  const validators = liveData?.validators && liveData.validators.length > 0
+  const validators = Array.isArray(liveData?.validators) && liveData.validators.length > 0
     ? liveData.validators
     : VALIDATORS;
   const networkStake = liveData?.networkStake ?? DEFAULT_NETWORK_STAKED;

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 export default function Error({
   error,
   reset,
@@ -7,6 +9,10 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    console.error('Error boundary caught:', error);
+  }, [error]);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
       <div className="bg-cream-5 border border-cream-8 rounded-2xl p-8 max-w-md text-center">
@@ -18,7 +24,8 @@ export default function Error({
         </p>
         <button
           onClick={reset}
-          className="px-6 py-2.5 bg-cream-12 border border-cream-20 rounded-lg text-cream text-sm font-body font-medium hover:bg-cream-20 transition-colors"
+          aria-label="Try loading the calculator again"
+          className="px-6 py-2.5 bg-cream-12 border border-cream-20 rounded-lg text-cream text-sm font-body font-medium hover:bg-cream-20 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cream-40"
         >
           Try again
         </button>
