@@ -24,7 +24,7 @@ export function ResultsPanel({ inputs, results }: ResultsPanelProps) {
       </h3>
 
       {/* Primary metric */}
-      <div className="text-center py-4 mb-4 border-b border-cream-8" aria-live="polite">
+      <div className="text-center py-4 mb-4 border-b border-cream-8" aria-live="polite" aria-atomic="true">
         <p className="text-cream-40 text-[11px] uppercase tracking-[0.08em] mb-1 font-body">
           {isValidator ? 'Net Annual Profit' : 'Annual Revenue'}
         </p>

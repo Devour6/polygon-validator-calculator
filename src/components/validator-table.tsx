@@ -90,7 +90,7 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
           </thead>
           <tbody>
             {filtered.length === 0 && (
-              <tr><td colSpan={columns.length} className="py-8 text-center text-cream-20 text-sm font-body">No validators found</td></tr>
+              <tr><td colSpan={columns.length} role="status" className="py-8 text-center text-cream-20 text-sm font-body">No validators found</td></tr>
             )}
             {filtered.map((v, j) => {
               const profit = calcProfit(v);
@@ -100,7 +100,9 @@ export function ValidatorTable({ inputs, mode, selectedValidator, onSelect, live
               return (
                 <tr
                   key={v.originalIndex}
+                  role="button"
                   tabIndex={0}
+                  aria-label={`Select validator ${v.name}`}
                   onClick={() => onSelect(v)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(v); } }}
                   className={`cursor-pointer transition-all border-b border-cream-5 border-l-[3px] hover:bg-cream-5 focus-visible:bg-cream-5 focus-visible:outline-none opacity-0 animate-row-fade ${

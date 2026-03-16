@@ -9,6 +9,11 @@ interface CalculatorFormProps {
   onModeChange: (mode: CalculatorMode) => void;
 }
 
+function sanitize(value: string, fallback = 0): number {
+  const raw = parseFloat(value);
+  return isFinite(raw) ? Math.max(0, raw) : fallback;
+}
+
 export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFormProps) {
   const isValidator = inputs.mode === 'validator';
 
@@ -132,7 +137,7 @@ export function CalculatorForm({ inputs, onUpdate, onModeChange }: CalculatorFor
                 type="number"
                 aria-label={label}
                 value={inputs[key]}
-                onChange={(e) => onUpdate(key, Math.max(0, Number(e.target.value) || 0))}
+                onChange={(e) => onUpdate(key, sanitize(e.target.value))}
                 className="w-full mt-1 px-3 py-2 bg-dark border border-cream-8 rounded-lg text-cream text-sm font-body outline-none transition-all focus:border-cream-20"
               />
             </div>
