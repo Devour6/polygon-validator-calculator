@@ -19,9 +19,10 @@ export function StatsBar({ liveData, loading }: StatsBarProps) {
 
   const totalValidators = validators.length;
   const totalStaked = validators.reduce((sum, v) => sum + v.totalStake, 0);
-  const avgCommission =
-    validators.reduce((sum, v) => sum + v.commission, 0) / totalValidators;
-  const networkApy = (annualEmission / networkStake) * 100;
+  const avgCommission = totalValidators > 0
+    ? validators.reduce((sum, v) => sum + v.commission, 0) / totalValidators
+    : 0;
+  const networkApy = networkStake > 0 ? (annualEmission / networkStake) * 100 : 0;
 
   const isLive = !!liveData?.updatedAt;
 

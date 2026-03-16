@@ -43,19 +43,19 @@ export async function GET() {
       validators = activeValidators.map(
         (v: Record<string, unknown>, i: number) => {
           // totalStaked comes as a float in wei (e.g., 4.386e+24)
-          const totalStake = Math.round(
-            Number(v.totalStaked ?? 0) / 1e18
-          );
-          const selfStake = Math.round(
-            Number(v.selfStake ?? 0) / 1e18
-          );
+          const rawTotal = Number(v.totalStaked ?? 0) / 1e18;
+          const rawSelf = Number(v.selfStake ?? 0) / 1e18;
+          const totalStake = isFinite(rawTotal) ? Math.max(0, Math.round(rawTotal)) : 0;
+          const selfStake = isFinite(rawSelf) ? Math.max(0, Math.round(rawSelf)) : 0;
           totalStaked += totalStake;
+          const commission = typeof v.commissionPercent === "number" ? v.commissionPercent : 5;
+          const uptime = typeof v.uptimePercent === "number" ? v.uptimePercent : 100;
           return {
-            name: (v.name as string) || `Validator ${v.id ?? i}`,
+            name: typeof v.name === "string" && v.name ? v.name : `Validator ${v.id ?? i}`,
             totalStake,
             selfStake,
-            commission: (v.commissionPercent as number) ?? 5,
-            uptime: (v.uptimePercent as number) ?? 100,
+            commission,
+            uptime,
           };
         }
       );
@@ -73,7 +73,8 @@ export async function GET() {
       validators,
       updatedAt: isLive ? new Date().toISOString() : null,
     });
-  } catch {
+  } catch (err) {
+    console.error("Live data fetch error:", err instanceof Error ? err.message : String(err));
     return NextResponse.json({
       polPrice: DEFAULT_POL_PRICE,
       networkStake: DEFAULT_NETWORK_STAKED,

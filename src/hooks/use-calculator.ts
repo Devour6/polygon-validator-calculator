@@ -65,6 +65,7 @@ export function useCalculator(liveData?: LiveData | null) {
 
   const setMode = useCallback((mode: CalculatorMode) => {
     if (mode === 'delegator') {
+      setSelectedValidator(null);
       setIsBreakeven(false);
       setInputs((prev) => ({ ...prev, mode, selfStake: 100000 }));
     } else {
